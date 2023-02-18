@@ -29,10 +29,9 @@ function package_base() {
   less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
   dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
   screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev \
-  nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat
+  nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib
 
   fapt-history curl dnsutils samba ssh snmp faketime
-  fapt-history-aliases python3-pyftpdlib
   fapt-aliases php python3 grc emacs-nox xsel libxml2-utils fzf
 
   install_rust_cargo
