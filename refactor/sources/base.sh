@@ -16,7 +16,11 @@ function update() {
 # Package dedicated to the basic things the env needs
 function package_base() {
   update
+
+  colorecho "Installing apt-fast for faster dep installs"
+  apt-get install -y curl sudo wget
   /bin/bash -c "$(curl -sL https://git.io/vokNn)" # Install apt-fast
+
   deploy_exegol
   fapt software-properties-common
 
@@ -24,7 +28,9 @@ function package_base() {
   add-apt-repository non-free
   apt-get update
 
-  fapt man git lsb-release pciutils pkg-config zip unzip kmod sudo wget gnupg2 python2 wget \
+  colorecho "Starting main programs install"
+
+  fapt man git lsb-release pciutils pkg-config zip unzip kmod gnupg2 python2 wget \
   gnupg2 python2-dev python3-dev python3-venv libffi-dev python3-pip zsh asciinema \
   python-setuptools python3-setuptools npm gem automake autoconf make gcc g++ file lsof \
   less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
@@ -32,7 +38,7 @@ function package_base() {
   screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev \
   nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils
 
-  fapt-history curl dnsutils samba ssh snmp faketime
+  fapt-history dnsutils samba ssh snmp faketime
   fapt-aliases php python3 grc emacs-nox xsel fzf
 
   install_rust_cargo
@@ -49,6 +55,7 @@ function package_base() {
   python -m pip install wheel
   install_pipx
   add-test-command "fzf --version"
+  add-history curl
   install_yarn
   install_ultimate_vimrc          # Make vim usable OOFB
   install_mdcat                   # cat markdown files

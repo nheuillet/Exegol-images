@@ -41,7 +41,7 @@ function add-test-command() {
 
 function fapt() {
   colorecho "Installing apt package(s): $*"
-  apt-fast install -y --no-install-recommends "$@"
+  /usr/local/sbin/apt-fast install -y --no-install-recommends "$@"
 }
 
 function fapt-noexit() {
