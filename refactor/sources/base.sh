@@ -154,7 +154,8 @@ function set_go_env() {
 function deploy_exegol() {
   colorecho "Installing Exegol things"
   # Moving exegol files to /
-  mv /root/sources/exegol /.exegol
+  # It's copied and not moved for caching and updating purposes (reusing exegol_base to create exegol_base)
+  cp /root/sources/exegol /.exegol
   # Moving supported custom configurations in /opt
   mv /.exegol/skel/supported_setups.md /opt/
   mkdir /var/log/exegol
