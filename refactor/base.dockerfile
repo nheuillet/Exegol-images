@@ -12,6 +12,14 @@ LABEL org.exegol.src_repository="https://github.com/ThePorgs/Exegol-images"
 
 RUN echo "${TAG}-${VERSION}" > /opt/.exegol_version
 
-ADD sources /root/sources/
+ADD sources /root/sources
 
-RUN /root/sources/base.sh package_base
+WORKDIR /root/sources/
+
+RUN chmod +x base.sh
+
+RUN ./base.sh package_base
+
+RUN echo "finished"
+
+ENTRYPOINT ["/.exegol/entrypoint.sh"]
