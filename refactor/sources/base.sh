@@ -3,8 +3,6 @@
 
 set -e
 
-echo "Starting script"
-
 source "common.sh"
 
 function update() {
@@ -116,6 +114,9 @@ function install_exegol-history() {
 }
 
 function install_rust_cargo() {
+  if command -v /root/.cargo/bin/cargo &>/dev/null; then
+    return
+  fi
   colorecho "Installing rustc, cargo, rustup"
   curl https://sh.rustup.rs -sSf | sh -s -- -y
   source "$HOME/.cargo/env"
