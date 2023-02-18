@@ -36,7 +36,7 @@ function package_base() {
   python-setuptools python3-setuptools npm gem automake autoconf make gcc g++ file lsof \
   less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
   dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
-  screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev \
+  screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev bundler \
   nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils
 
   fapt-history dnsutils samba ssh snmp faketime
@@ -148,6 +148,7 @@ function install_go() {
   fi
   rm -rf /usr/local/go
   tar -C /usr/local -xzf /tmp/go.tar.gz
+  rm -rf /tmp/go.tar.gz
   export PATH=$PATH:/usr/local/go/bin
   add-test-command "go version"
 }

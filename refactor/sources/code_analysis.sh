@@ -19,8 +19,10 @@ function install_vulny-code-static-analysis() {
 
 function install_brakeman() {
   colorecho "Installing Brakeman"
-  export GEM_HOME=/root/.gem
-  gem install brakeman
+  git -C /opt/tools clone --depth=1 https://github.com/presidentbeef/brakeman
+  cd /opt/tools/brakeman
+  bundle install
+  # /opt/tools/brakeman/bin/brakeman
   add-history brakeman 
   add-test-command "brakeman --help"
 }

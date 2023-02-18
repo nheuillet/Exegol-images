@@ -1,6 +1,6 @@
-FROM ExegolCodeAnalysis as code_analysis
+FROM exegol_code_analysis as code_analysis
 
-FROM ExegolBase
+FROM exegol_updated
 
 
 ARG TAG="local"
@@ -15,16 +15,16 @@ LABEL org.exegol.src_repository="https://github.com/ThePorgs/Exegol-images"
 
 WORKDIR /tmp
 
-COPY --from=code_analysis tmp-pipx tmp-pipx
-COPY --from=code_analysis tmp-gem tmp-gem
-COPY --from=code_analysis tmp-tool tmp-tool
+COPY --from=code_analysis /tmp/tmp-pipx tmp-pipx
+COPY --from=code_analysis /tmp/tmp-tools tmp-tools
 
 
-RUN cp -RT temp-gem /root/.gem/
+RUN cp -RT tmp-pipx /root/.local/pipx/
 
-RUN cp -RT temp-pipx /root/.local/pipx/
+RUN cp -RT tmp-tools /opt/tools
 
-RUN cp -RT temp-tools /opt/tools
+RUN rm -rf /tmp/tmp-*
 
+WORKDIR /root
 
 ENTRYPOINT [ "/.exegol/entrypoint.sh" ]

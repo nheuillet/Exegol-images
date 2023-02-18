@@ -2,7 +2,8 @@
 
 set -e
 
-source *.sh
+source base.sh
+source code_analysis.sh
 
 # Entry point for the installation
 if [[ $EUID -ne 0 ]]; then

@@ -1,4 +1,4 @@
-FROM ExegolBase as build
+FROM exegol_updated as build
 
 ADD sources /root/sources
 
@@ -23,8 +23,7 @@ LABEL org.exegol.src_repository="https://github.com/ThePorgs/Exegol-images"
 
 RUN echo "${TAG}-${VERSION}" > /opt/.exegol_version
 
-WORKDIR /root
+WORKDIR /tmp
 
-COPY --from=build /root/.gem tmp-gem
 COPY --from=build /root/.local/pipx tmp-pipx
 COPY --from=build /opt/tools tmp-tools
