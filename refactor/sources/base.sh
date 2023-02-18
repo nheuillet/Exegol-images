@@ -16,6 +16,7 @@ function update() {
 # Package dedicated to the basic things the env needs
 function package_base() {
   update
+  /bin/bash -c "$(curl -sL https://git.io/vokNn)" # Install apt-fast
   deploy_exegol
   fapt software-properties-common
 
