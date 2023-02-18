@@ -57,51 +57,18 @@ title: Layers Hierarchy
 
 ```
 
-```Dockerfile
+## Tool separation using multi images
 
-# ExegolBase
+Tools should be separated by package. They can be installed using 4 different ways:
 
-FROM Debian
-
-RUN apt update && apt upgrade -y
-RUN apt install $DEPENDENCIES
-
-# Tag: exegolBase
-```
-
-```Dockerfile
-FROM ExegolBase:latest
-
-RUN apt update && apt upgrade -y
-RUN apt install $DEPENDENCIES # installed => nothing, new => installed
-# Tag: exegolBase
-```
-
-```Dockerfile
-# ExegolIAD
-
-FROM ExegolBase as build
-
-RUN pipx install git+https://github.com/PorchettaIndustries/CrackMapExec.git 
-# => /root/.local/bin/cme
-# .....
-
-
-FROM busybox:1.36-uclib
-
-COPY --from=build /root/.local/bin/cme /root/.local/bin/cme
-
-# tag: ExegolIAD
-```
-
-```Dockerfile
-# ExegolFull
-FROM EXEGOLIAD as iad
-FROM EXEGOLIOSINT as iosint
-
-FROM ExegolBase
-
-COPY --from=iosint /root/.local/bin /root/.local/bin
-COPY --from=iad /root/.local/bin /root/.local/bin
-# ExegolIFull
-```
+- Static binaries: they can be copy pasted straight into the final image
+- Dynamic binaries (using dynamic shared libraries):
+  - We need to make sure all dependencies will be installed in the base image
+    - No new dependency shall be installed in the intermediate image
+  - We can copy the output binary straight into the final image
+- Ruby programs
+  - All of the gems installs can be confined to a single folder using the GEM_HOME variable.
+  - We can then copy the GEM_FOLDER and merge it into the final image
+- Python programs
+  - All of the python programs should be installed using pipx or venv
+    - We can then import the program folders straight into the final image
