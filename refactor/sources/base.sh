@@ -129,7 +129,7 @@ function filesystem() {
 }
 
 function install_go() {
-  if command -v go &>/dev/null; then
+  if command -v /usr/local/go/bin/go &>/dev/null; then
     return
   fi
   colorecho "Installing go (Golang)"
