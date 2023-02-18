@@ -7,7 +7,7 @@ export GEM_HOME=/root/.gem
 function package_code_analysis() {
   install_vulny-code-static-analysis
   install_brakeman		            # Checks Ruby on Rails applications for security vulnerabilities
-  install_semgrep                 # Static analysis engine for finding bugs and vulnerabilities
+  install_pipx_tool semgrep "semgrep --help" history # Static analysis engine for finding bugs and vulnerabilities
 }
 
 function install_vulny-code-static-analysis() {
@@ -25,11 +25,4 @@ function install_brakeman() {
   # /opt/tools/brakeman/bin/brakeman
   add-history brakeman 
   add-test-command "brakeman --help"
-}
-
-function install_semgrep() {
-  colorecho "Installing semgrep"
-  python3 -m pipx install semgrep
-  add-history semgrep
-  add-test-command "semgrep --help"
 }

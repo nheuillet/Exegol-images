@@ -72,3 +72,36 @@ function fapt-history-aliases() {
         add-aliases "$i"
     done
 }
+
+function set_go_env() {
+  colorecho "Setting environment variables for installation"
+  export GO111MODULE=on
+  export PATH=$PATH:/usr/local/go/bin:/root/.local/bin
+}
+
+function install_pipx_git_tool() {
+   colorecho "Installing $1 with pipx"
+   python3 -m pipx install $1
+   if [ "$3" ]
+   then
+     add-test-command $3
+   fi
+   if [[ "$*" == *"history"* ]]
+   then
+       add-history $2
+   fi
+}
+
+
+function install_pipx_tool() {
+   colorecho "Installing $1 with pipx"
+   python3 -m pipx install $1
+   if [ "$2" ]
+   then
+     add-test-command $2
+   fi
+   if [[ "$*" == *"history"* ]]
+   then
+       add-history $1
+   fi
+ }

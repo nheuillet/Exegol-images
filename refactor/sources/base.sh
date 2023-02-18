@@ -1,8 +1,6 @@
 #!/bin/bash
 # Author: The Exegol Project
 
-set -e
-
 source "common.sh"
 
 function update() {
@@ -35,8 +33,13 @@ function package_base() {
   less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
   dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
   screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev bundler \
-  nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils
-
+  nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils \
+  libsasl2-dev libldap2-dev libgbm1
+  
+  # libsasl2-dev libldap2-dev  => sprayhound
+  # libgbm1 => Bloodhound
+  # cypher-shell daemon => neo4j
+  
   fapt-history dnsutils samba ssh snmp faketime
   fapt-aliases php python3 grc emacs-nox xsel fzf
 
@@ -114,9 +117,6 @@ function install_exegol-history() {
 }
 
 function install_rust_cargo() {
-  if command -v /root/.cargo/bin/cargo &>/dev/null; then
-    return
-  fi
   colorecho "Installing rustc, cargo, rustup"
   curl https://sh.rustup.rs -sSf | sh -s -- -y
   source "$HOME/.cargo/env"
@@ -152,13 +152,6 @@ function install_go() {
   rm -rf /tmp/go.tar.gz
   export PATH=$PATH:/usr/local/go/bin
   add-test-command "go version"
-}
-
-## TODO: fix to set it in zshrc
-function set_go_env() {
-  colorecho "Setting environment variables for installation"
-  export GO111MODULE=on
-  export PATH=$PATH:/usr/local/go/bin:/root/.local/bin
 }
 
 function deploy_exegol() {
