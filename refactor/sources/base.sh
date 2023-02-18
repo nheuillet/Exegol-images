@@ -22,6 +22,7 @@ function package_base() {
   /bin/bash -c "$(curl -sL https://git.io/vokNn)" # Install apt-fast
 
   deploy_exegol
+  install_exegol-history
   fapt software-properties-common
 
   add-apt-repository contrib
@@ -43,7 +44,7 @@ function package_base() {
 
   install_rust_cargo
 
-  ln -s /usr/bin/python2.7 /usr/bin/python # Default python is set to 2.7
+  ln -fs /usr/bin/python2.7 /usr/bin/python # Default python is set to 2.7
   install_python-pip              # Pip. Should we set pip2 to default?
   python3 -m pip install --upgrade pip
   filesystem
@@ -62,7 +63,7 @@ function package_base() {
   add-test-command "bat --version"
   DEBIAN_FRONTEND=noninteractive fapt macchanger  # Macchanger
   install_gf                      # wrapper around grep
-  fapt-noexit rar                 # rar
+  fapt-noexit rar                 # rar (Only AMD)
 
   cp -v /root/sources/grc/grc.conf /etc/grc.conf # grc
 
@@ -91,13 +92,17 @@ function package_base() {
 
   # NVM (install in conctext)
   zsh -c "source ~/.zshrc && nvm install node"
+
+  # FZF
+  touch /usr/share/doc/fzf/examples/key-bindings.zsh
 }
 
 function install_exegol-history() {
   colorecho "Installing Exegol-history"
 #  git -C /opt/tools/ clone https://github.com/ThePorgs/Exegol-history
 # todo : below is something basic. A nice tool being created for faster and smoother worflow
-  mkdir /opt/tools/Exegol-history
+  mkdir -p /opt/tools/Exegol-history
+  rm -rf /opt/tools/Exegol-history/profile.sh
   echo "#export INTERFACE='eth0'" >> /opt/tools/Exegol-history/profile.sh
   echo "#export DOMAIN='DOMAIN.LOCAL'" >> /opt/tools/Exegol-history/profile.sh
   echo "#export DOMAIN_SID='S-1-5-11-39129514-1145628974-103568174'" >> /opt/tools/Exegol-history/profile.sh
@@ -124,6 +129,9 @@ function filesystem() {
 }
 
 function install_go() {
+  if command -v go &>/dev/null; then
+    return
+  fi
   colorecho "Installing go (Golang)"
   cd /tmp/ || exit
   if [[ $(uname -m) = 'x86_64' ]]
@@ -155,10 +163,11 @@ function deploy_exegol() {
   colorecho "Installing Exegol things"
   # Moving exegol files to /
   # It's copied and not moved for caching and updating purposes (reusing exegol_base to create exegol_base)
-  cp /root/sources/exegol /.exegol
+  rm -rf /.exegol || true
+  cp -r /root/sources/exegol /.exegol
   # Moving supported custom configurations in /opt
   mv /.exegol/skel/supported_setups.md /opt/
-  mkdir /var/log/exegol
+  mkdir -p /var/log/exegol
   # Setup perms
   chown -R root:root /.exegol
   chmod 500 /.exegol/*.sh
@@ -181,6 +190,9 @@ function install_python-pip() {
 }
 
 function install_ohmyzsh() {
+  if [ -d /root/.oh-my-zsh ]; then
+    return
+  fi
   colorecho "Installing oh-my-zsh, config, history, aliases"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   cp -v /root/sources/zsh/history ~/.zsh_history
@@ -210,6 +222,9 @@ function install_yarn() {
 }
 
 function install_ultimate_vimrc() {
+  if [ -d /root/.vim_runtime ]; then
+    return
+  fi
   colorecho "Installing The Ultimate vimrc"
   git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
   sh ~/.vim_runtime/install_awesome_vimrc.sh
