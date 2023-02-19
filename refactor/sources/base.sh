@@ -61,7 +61,7 @@ function package_base() {
   install_yarn
   install_ultimate_vimrc          # Make vim usable OOFB
   install_mdcat                   # cat markdown files
-  add-test-command "bat --version"
+  add-test-command "batcat --version"
   DEBIAN_FRONTEND=noninteractive fapt macchanger  # Macchanger
   install_gf                      # wrapper around grep
   fapt-noexit rar                 # rar (Only AMD)

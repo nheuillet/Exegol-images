@@ -24,7 +24,7 @@ function install_brakeman() {
   git -C /opt/tools clone --depth=1 https://github.com/presidentbeef/brakeman
   cd /opt/tools/brakeman || false
   bundle install
-  # /opt/tools/brakeman/bin/brakeman
+  add-aliases brakeman
   add-history brakeman 
   add-test-command "brakeman --help"
 }

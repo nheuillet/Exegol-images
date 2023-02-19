@@ -29,6 +29,16 @@ RUN cp -RT tmp-history /root/.zsh_history
 RUN cp -RT tmp-aliases /opt/.exegol_aliases
 RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
 
+# Create pipx symbolic links
+
+WORKDIR /root/sources/
+
+ADD sources /root/sources/
+
+RUN chmod +x pipx_symlink.sh
+
+RUN pipx_symlink.sh
+
 # RUN rm -rf /tmp/tmp-*
 
 # COPY --from=ad /tmp/tmp-pipx tmp-pipx
