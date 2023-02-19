@@ -54,7 +54,6 @@ jobs:
   build-ca:
     name: Build Code Analysis Image
     uses: ./.github/workflows/sub_build.yml
-    # needs: build-base
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
       IMAGE_BASE_NAME: nightly-code-analysis
@@ -62,61 +61,42 @@ jobs:
       DOCKERFILE: code_analysis.dockerfile
       ARCH: ${{ inputs.ARCH }}
   
-  # build-ca2:
-  #   name: Build Code Analysis Image 2
-  #   uses: ./.github/workflows/sub_build.yml
-  #   # needs: build-base
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: nightly-code-analysis
-  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
-  #     ARCH: ${{ inputs.ARCH }}
-  
-  
+  build-ca2:
+    name: Build Code Analysis Image 2
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/code_analysis.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
-  # test:
-  #   name: Test
-  #   needs:
-  #     - build-ca
-  #   uses: ./.github/workflows/sub_test.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: ${{ inputs.IMAGE_BASE_NAME }}
-  #     ARCH: ${{ inputs.ARCH }}
+  build-ca3:
+    name: Build Code Analysis Image 3
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/code_analysis.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
-  # push-base:
-  #   name: Push the base image
-  #   needs: prune
-  #   # Push image to exegol-builds whatever the outcome of "test" is, as long as the image was built (which is already an implicit requirement of the "test" job)
-  #   # if: always() && inputs.PR_MODE == false && ( needs.test.result == 'failure' || needs.test.result == 'success' )
-  #   uses: ./.github/workflows/sub_push.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: ${{ inputs.IMAGE_BASE_NAME }}
-  #     ARCH: ${{ inputs.ARCH }}
-  #   secrets: inherit
+  build-ca4:
+    name: Build Code Analysis Image 4
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/code_analysis.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
-  # export_results:
-  #   name: Exporting test results for higher jobs
-  #   needs:
-  #     - test
-  #     - push
-  #   if: always()
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Extract build result
-  #       id: build
-  #       if: needs.build.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #     - name: Extract tests result
-  #       id: test
-  #       if: needs.test.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #     - name: Extract push result
-  #       id: push
-  #       if: needs.push.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #   outputs:
-  #     test: ${{ steps.test.outputs.result }}
-  #     push: ${{ steps.push.outputs.result }}
+  build-ca5:
+    name: Build Code Analysis Image 5
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/code_analysis.dockerfile
+      ARCH: ${{ inputs.ARCH }}

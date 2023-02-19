@@ -40,40 +40,15 @@ on:
         value: ${{ jobs.export_results.outputs.test }}
 
 jobs:
-  checker:
-    name: Check
-    runs-on:
-      - self-hosted
-      - builder
-      - ${{ inputs.ARCH }}
-    steps:
-      - name: Checker
-        run: |
-          echo "ok"
-
   build-full:
     name: Build Complete Image
     uses: ./.github/workflows/sub_build.yml
-    # needs:
-    #   - build-base
-    #   - build-ca
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
       IMAGE_BASE_NAME: nightly-full
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
       DOCKERFILE: full.dockerfile
       ARCH: ${{ inputs.ARCH }}
-
-  cleanup:
-    name: Cleanup
-    runs-on:
-      - self-hosted
-      - builder
-      - ${{ inputs.ARCH }}
-    needs: build-full
-    steps:
-      - name: Cleanup
-        run: docker rmi $(docker images -f "dangling=true" -q)
 
   # test:
   #   name: Final tests
@@ -85,38 +60,13 @@ jobs:
   #     IMAGE_BASE_NAME: ${{ inputs.IMAGE_BASE_NAME }}
   #     ARCH: ${{ inputs.ARCH }}
 
-  # push-base:
-  #   name: Push the base image
-  #   needs: prune
-  #   # Push image to exegol-builds whatever the outcome of "test" is, as long as the image was built (which is already an implicit requirement of the "test" job)
-  #   # if: always() && inputs.PR_MODE == false && ( needs.test.result == 'failure' || needs.test.result == 'success' )
-  #   uses: ./.github/workflows/sub_push.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: ${{ inputs.IMAGE_BASE_NAME }}
-  #     ARCH: ${{ inputs.ARCH }}
-  #   secrets: inherit
-
-  # export_results:
-  #   name: Exporting test results for higher jobs
-  #   needs:
-  #     - test
-  #     - push
-  #   if: always()
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Extract build result
-  #       id: build
-  #       if: needs.build.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #     - name: Extract tests result
-  #       id: test
-  #       if: needs.test.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #     - name: Extract push result
-  #       id: push
-  #       if: needs.push.result != 'success'
-  #       run: echo "result=failure" >> $GITHUB_OUTPUT
-  #   outputs:
-  #     test: ${{ steps.test.outputs.result }}
-  #     push: ${{ steps.push.outputs.result }}
+  cleanup:
+    name: Remove dangling images
+    runs-on:
+      - self-hosted
+      - builder
+      - ${{ inputs.ARCH }}
+    needs: build-full
+    steps:
+      - name: Cleanup
+        run: docker rmi $(docker images -f "dangling=true" -q)
