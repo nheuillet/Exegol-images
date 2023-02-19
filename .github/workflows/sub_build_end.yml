@@ -62,13 +62,11 @@ jobs:
 
   cleanup:
     name: Remove dangling images
-    needs:
-      - build-full
+    needs: test
     runs-on:
       - self-hosted
       - builder
       - ${{ inputs.ARCH }}
-    needs: build-full
     steps:
       - name: Cleanup
         run: docker rmi $(docker images -f "dangling=true" -q)
