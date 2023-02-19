@@ -70,6 +70,6 @@ jobs:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
       IMAGE_BASE_NAME: nightly-base
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: '${{ contains(github.event.head_commit.message, "reset") ? "base.dockerfile" : "clean_base.dockerfile" }}'
+      DOCKERFILE: base.dockerfile
       ARCH: ${{ inputs.ARCH }}
     secrets: inherit
