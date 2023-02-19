@@ -40,17 +40,6 @@ on:
         value: ${{ jobs.export_results.outputs.test }}
 
 jobs:
-  checker:
-    name: Check
-    runs-on:
-      - self-hosted
-      - builder
-      - ${{ inputs.ARCH }}
-    steps:
-      - name: Checker
-        run: |
-          echo "ok"
-
   build-ca:
     name: Build Code Analysis Image
     uses: ./.github/workflows/sub_build.yml
@@ -61,42 +50,42 @@ jobs:
       DOCKERFILE: code_analysis.dockerfile
       ARCH: ${{ inputs.ARCH }}
   
-  build-ca2:
-    name: Build Code Analysis Image 2
-    uses: ./.github/workflows/sub_build.yml
-    with:
-      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-code-analysis
-      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: ./refactor/code_analysis.dockerfile
-      ARCH: ${{ inputs.ARCH }}
+  # build-ca2:
+  #   name: Build Code Analysis Image 2
+  #   uses: ./.github/workflows/sub_build.yml
+  #   with:
+  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+  #     IMAGE_BASE_NAME: nightly-code-analysis
+  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
+  #     ARCH: ${{ inputs.ARCH }}
 
-  build-ca3:
-    name: Build Code Analysis Image 3
-    uses: ./.github/workflows/sub_build.yml
-    with:
-      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-code-analysis
-      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: ./refactor/code_analysis.dockerfile
-      ARCH: ${{ inputs.ARCH }}
+  # build-ca3:
+  #   name: Build Code Analysis Image 3
+  #   uses: ./.github/workflows/sub_build.yml
+  #   with:
+  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+  #     IMAGE_BASE_NAME: nightly-code-analysis
+  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
+  #     ARCH: ${{ inputs.ARCH }}
 
-  build-ca4:
-    name: Build Code Analysis Image 4
-    uses: ./.github/workflows/sub_build.yml
-    with:
-      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-code-analysis
-      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: ./refactor/code_analysis.dockerfile
-      ARCH: ${{ inputs.ARCH }}
+  # build-ca4:
+  #   name: Build Code Analysis Image 4
+  #   uses: ./.github/workflows/sub_build.yml
+  #   with:
+  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+  #     IMAGE_BASE_NAME: nightly-code-analysis
+  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
+  #     ARCH: ${{ inputs.ARCH }}
 
-  build-ca5:
-    name: Build Code Analysis Image 5
-    uses: ./.github/workflows/sub_build.yml
-    with:
-      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-code-analysis
-      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: ./refactor/code_analysis.dockerfile
-      ARCH: ${{ inputs.ARCH }}
+  # build-ca5:
+  #   name: Build Code Analysis Image 5
+  #   uses: ./.github/workflows/sub_build.yml
+  #   with:
+  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+  #     IMAGE_BASE_NAME: nightly-code-analysis
+  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
+  #     ARCH: ${{ inputs.ARCH }}
