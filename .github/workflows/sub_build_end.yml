@@ -62,6 +62,8 @@ jobs:
 
   cleanup:
     name: Remove dangling images
+    needs:
+      - build-full
     runs-on:
       - self-hosted
       - builder
