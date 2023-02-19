@@ -37,7 +37,7 @@ ADD sources /root/sources/
 
 RUN chmod +x pipx_symlink.sh
 
-RUN pipx_symlink.sh
+RUN ./pipx_symlink.sh
 
 # RUN rm -rf /tmp/tmp-*
 
