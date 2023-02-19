@@ -5,6 +5,8 @@ export GEM_HOME=/root/.gem
 
 # Package dedicated to SAST and DAST tools
 function package_code_analysis() {
+  bundle config path vendor/bundle
+
   install_vulny-code-static-analysis
   install_brakeman		            # Checks Ruby on Rails applications for security vulnerabilities
   install_pipx_tool semgrep "semgrep --help" history # Static analysis engine for finding bugs and vulnerabilities
@@ -20,7 +22,7 @@ function install_vulny-code-static-analysis() {
 function install_brakeman() {
   colorecho "Installing Brakeman"
   git -C /opt/tools clone --depth=1 https://github.com/presidentbeef/brakeman
-  cd /opt/tools/brakeman
+  cd /opt/tools/brakeman || false
   bundle install
   # /opt/tools/brakeman/bin/brakeman
   add-history brakeman 

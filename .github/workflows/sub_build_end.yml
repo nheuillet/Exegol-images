@@ -1,4 +1,4 @@
-name: (level 1 sub) Belt
+name: (level 5 sub) End Belt
 
 on:
   workflow_call:
@@ -40,45 +40,45 @@ on:
         value: ${{ jobs.export_results.outputs.test }}
 
 jobs:
-  prune:
-    name: Pre-build ${{ inputs.ARCH }} runner clean
+  checker:
+    name: Check
     runs-on:
       - self-hosted
       - builder
       - ${{ inputs.ARCH }}
     steps:
-      - name: Clean build folder
+      - name: Checker
         run: |
-          rm -rf * || true
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
-      - name: Clean unused dangling images
-        # dangling: images that were replaced with ones with the same name and tag
-        run: docker image prune --filter "label=org.exegol.app=Exegol" --force
-      - name: Clean unused volumes
-        run: docker volume prune --force
+          echo "ok"
 
-  build-base:
-    name: Build Base Image
+  build-full:
+    name: Build Complete Image
     uses: ./.github/workflows/sub_build.yml
-    needs: prune
-    permissions:
-      contents: read
-      packages: write
+    # needs:
+    #   - build-base
+    #   - build-ca
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-base
+      IMAGE_BASE_NAME: nightly-full
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: clean_base.dockerfile
+      DOCKERFILE: full.dockerfile
       ARCH: ${{ inputs.ARCH }}
-    secrets: inherit
+
+  cleanup:
+    name: Cleanup
+    runs-on:
+      - self-hosted
+      - builder
+      - ${{ inputs.ARCH }}
+    needs: build-full
+    steps:
+      - name: Cleanup
+        run: docker rmi $(docker images -f "dangling=true" -q)
 
   # test:
-  #   name: Test
+  #   name: Final tests
   #   needs:
-  #     - build-base
-  #     - build-ca
+  #     - build-full
   #   uses: ./.github/workflows/sub_test.yml
   #   with:
   #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}

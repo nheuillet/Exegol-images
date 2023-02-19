@@ -5,6 +5,8 @@ source common.sh
 
 # Package dedicated to internal Active Directory tools
 function package_ad() {
+  bundle config path vendor/bundle
+
   set_go_env
   install_responder               # LLMNR, NBT-NS and MDNS poisoner
   install_pipx_tool ldapdomaindump "ldapdomaindump --help" history
@@ -14,8 +16,6 @@ function package_ad() {
   install_bloodhound-py           # AD cartographer
   install_neo4j                   # Bloodhound dependency
   install_bloodhound
-#  # install_bloodhound_old_v3
-#  # install_bloodhound_old_v2
   install_cyperoth                # Bloodhound dependency
 #  # install_mitm6_sources         # Install mitm6 from sources
   install_pipx_tool mitm6 "mitm6 --help" history # DNS server misconfiguration exploiter
@@ -88,34 +88,44 @@ function package_ad() {
 }
 
 function package_ad_configure() {
-    # NEO4J
-    dpkg -i /var/cache/apt/archives/cypher-shell*
-    dpkg -i /var/cache/apt/archives/daemon*
-    dpkg -i /var/cache/apt/archives/neo4j*
-    # All the cp + set password here
+  configure_responder
+  configure_bloodhound
+  configure_neo4j
+  configure_impacket
+  configure_darkarmour
+  configure_krbrelayx
 }
 
 function install_responder() {
   colorecho "Installing Responder"
   git -C /opt/tools/ clone --depth=1 https://github.com/lgandx/Responder
-  sed -i 's/ Random/ 1122334455667788/g' /opt/tools/Responder/Responder.conf
-  sed -i 's/files\/AccessDenied.html/\/opt\/tools\/Responder\/files\/AccessDenied.html/g' /opt/tools/Responder/Responder.conf
-  sed -i 's/files\/BindShell.exe/\/opt\/tools\/Responder\/files\/BindShell.exe/g' /opt/tools/Responder/Responder.conf
-  sed -i 's/certs\/responder.crt/\/opt\/tools\/Responder\/certs\/responder.crt/g' /opt/tools/Responder/Responder.conf
-  sed -i 's/certs\/responder.key/\/opt\/tools\/Responder\/certs\/responder.key/g' /opt/tools/Responder/Responder.conf
   fapt gcc-mingw-w64-x86-64 python3-netifaces
-  x86_64-w64-mingw32-gcc /opt/tools/Responder/tools/MultiRelay/bin/Runas.c -o /opt/tools/Responder/tools/MultiRelay/bin/Runas.exe -municode -lwtsapi32 -luserenv
-  x86_64-w64-mingw32-gcc /opt/tools/Responder/tools/MultiRelay/bin/Syssvc.c -o /opt/tools/Responder/tools/MultiRelay/bin/Syssvc.exe -municode
-  cd /opt/tools/Responder
-  /opt/tools/Responder/certs/gen-self-signed-cert.sh
   add-aliases responder
   add-history responder
   add-test-command "responder --version"
 }
 
+function configure_responder() {
+  sed -i 's/ Random/ 1122334455667788/g' /opt/tools/Responder/Responder.conf
+  sed -i 's/files\/AccessDenied.html/\/opt\/tools\/Responder\/files\/AccessDenied.html/g' /opt/tools/Responder/Responder.conf
+  sed -i 's/files\/BindShell.exe/\/opt\/tools\/Responder\/files\/BindShell.exe/g' /opt/tools/Responder/Responder.conf
+  sed -i 's/certs\/responder.crt/\/opt\/tools\/Responder\/certs\/responder.crt/g' /opt/tools/Responder/Responder.conf
+  sed -i 's/certs\/responder.key/\/opt\/tools\/Responder\/certs\/responder.key/g' /opt/tools/Responder/Responder.conf
+  x86_64-w64-mingw32-gcc /opt/tools/Responder/tools/MultiRelay/bin/Runas.c -o /opt/tools/Responder/tools/MultiRelay/bin/Runas.exe -municode -lwtsapi32 -luserenv
+  x86_64-w64-mingw32-gcc /opt/tools/Responder/tools/MultiRelay/bin/Syssvc.c -o /opt/tools/Responder/tools/MultiRelay/bin/Syssvc.exe -municode
+  cd /opt/tools/Responder || false
+  /opt/tools/Responder/certs/gen-self-signed-cert.sh
+}
+
 function install_crackmapexec() {
   colorecho "Installing CrackMapExec"
   python3 -m pipx install crackmapexec
+  add-aliases crackmapexec
+  add-history crackmapexec
+  add-test-command "crackmapexec --help"
+}
+
+function configure_crackmapexec() {
   ~/.local/bin/crackmapexec || true
   mkdir -p ~/.cme
   [ -f ~/.cme/cme.conf ] && mv ~/.cme/cme.conf ~/.cme/cme.conf.bak
@@ -123,9 +133,6 @@ function install_crackmapexec() {
   # below is for having the ability to check the source code when working with modules and so on
   # git -C /opt/tools/ clone https://github.com/byt3bl33d3r/CrackMapExec
   cp -v /root/sources/grc/conf.cme /usr/share/grc/conf.cme
-  add-aliases crackmapexec
-  add-history crackmapexec
-  add-test-command "crackmapexec --help"
 }
 
 function install_bloodhound-py() {
@@ -140,6 +147,9 @@ function install_bloodhound() {
   colorecho "Installing BloodHound from sources"
   git -C /opt/tools/ clone --depth=1 https://github.com/BloodHoundAD/BloodHound/
   mv /opt/tools/BloodHound /opt/tools/BloodHound4
+}
+
+function configure_bloodhound() {
   zsh -c "source ~/.zshrc && cd /opt/tools/BloodHound4 && nvm install 16.13.0 && nvm use 16.13.0 && npm install -g electron-packager && npm install && npm run build:linux"
   if [[ $(uname -m) = 'x86_64' ]]
   then
@@ -166,18 +176,23 @@ function install_neo4j() {
   echo 'deb https://debian.neo4j.com stable latest' | tee /etc/apt/sources.list.d/neo4j.list
   apt-get update
   fapt --download-only neo4j
-
-#   # TODO: when temporary fix is not needed anymore --> neo4j-admin dbms set-initial-password exegol4thewin
-#   neo4j-admin set-initial-password exegol4thewin
-  
-#   mkdir -p /usr/share/neo4j/logs/
-#   touch /usr/share/neo4j/logs/neo4j.log
-#   cp /usr/bin/neo4j /opt/tools/bin/
-#   add-history neo4j
-#   add-test-command "neo4j version"
 }
 
-## NEW TOOLS
+function configure_neo4j() {
+  dpkg -i /var/cache/apt/archives/cypher-shell*
+  dpkg -i /var/cache/apt/archives/daemon*
+  dpkg -i /var/cache/apt/archives/neo4j*
+
+
+  # TODO: when temporary fix is not needed anymore --> neo4j-admin dbms set-initial-password exegol4thewin
+  neo4j-admin set-initial-password exegol4thewin
+  
+  mkdir -p /usr/share/neo4j/logs/
+  touch /usr/share/neo4j/logs/neo4j.log
+  cp /usr/bin/neo4j /opt/tools/bin/
+  add-history neo4j
+  add-test-command "neo4j version"
+}
 
 function install_cyperoth() {
   colorecho "Installing cypheroth"
@@ -201,12 +216,6 @@ function install_impacket() {
   python3 -m pipx install git+https://github.com/ThePorgs/impacket
   python3 -m pipx inject impacket chardet
 
-  cp -v /root/sources/grc/conf.ntlmrelayx /usr/share/grc/conf.ntlmrelayx
-  cp -v /root/sources/grc/conf.secretsdump /usr/share/grc/conf.secretsdump
-  cp -v /root/sources/grc/conf.getgpppassword /usr/share/grc/conf.getgpppassword
-  cp -v /root/sources/grc/conf.rbcd /usr/share/grc/conf.rbcd
-  cp -v /root/sources/grc/conf.describeTicket /usr/share/grc/conf.describeTicket
-
   add-aliases impacket
   add-history impacket
   add-test-command "ntlmrelayx.py --help"
@@ -218,6 +227,14 @@ function install_impacket() {
   add-test-command "ticketer.py --help && ticketer.py --help | grep extra-pac"
   add-test-command "dacledit.py --help"
   add-test-command "describeTicket.py --help"
+}
+
+function configure_impacket() {
+  cp -v /root/sources/grc/conf.ntlmrelayx /usr/share/grc/conf.ntlmrelayx
+  cp -v /root/sources/grc/conf.secretsdump /usr/share/grc/conf.secretsdump
+  cp -v /root/sources/grc/conf.getgpppassword /usr/share/grc/conf.getgpppassword
+  cp -v /root/sources/grc/conf.rbcd /usr/share/grc/conf.rbcd
+  cp -v /root/sources/grc/conf.describeTicket /usr/share/grc/conf.describeTicket
 }
 
 function install_pykek() {
@@ -236,22 +253,22 @@ function install_privexchange() {
 }
 
 function install_ruler() {
-
-  # GO INSTALL ??
-
   colorecho "Downloading ruler and form templates"
-  git -C /opt/tools clone https://github.com/sensepost/ruler/
-  cd /opt/tools/ruler
-  if [[ $(uname -m) = 'x86_64' ]]
-  then
-    GOOS=linux GOARCH=amd64 go build -o ruler
-  elif [[ $(uname -m) = 'aarch64' ]]
-  then
-    GOOS=linux GOARCH=arm64 go build -o ruler
-  else
-    criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
-  fi
-  ln -s /opt/tools/ruler/ruler /opt/tools/bin/ruler
+
+  go install github.com/sensepost/ruler@latest
+
+  # git -C /opt/tools clone https://github.com/sensepost/ruler/
+  # cd /opt/tools/ruler
+  # if [[ $(uname -m) = 'x86_64' ]]
+  # then
+  #   GOOS=linux GOARCH=amd64 go build -o ruler
+  # elif [[ $(uname -m) = 'aarch64' ]]
+  # then
+  #   GOOS=linux GOARCH=arm64 go build -o ruler
+  # else
+  #   criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+  # fi
+  # ln -s /opt/tools/ruler/ruler /opt/tools/bin/ruler
   add-history ruler
   add-test-command "ruler --version"
 }
@@ -259,20 +276,28 @@ function install_ruler() {
 function install_darkarmour() {
   colorecho "Installing darkarmour"
   git -C /opt/tools/ clone --depth=1 https://github.com/bats3c/darkarmour
-  cd /opt/tools/darkarmour
-  apt-get -y install mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 upx-ucl osslsigncode # DEPS
+  fapt --download-only mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 upx-ucl osslsigncode # DEPS
   add-aliases darkarmour
   add-history darkarmour
   add-test-command "darkarmour --help"
+}
+
+function configure_darkarmour() {
+  dpkg -i /var/cache/apt/archives/mingw-w64-tools*
+  dpkg -i /var/cache/apt/archives/mingw-w64-common*
+  dpkg -i /var/cache/apt/archives/g++-mingw-w64*
+  dpkg -i /var/cache/apt/archives/gcc-mingw-w64*
+  dpkg -i /var/cache/apt/archives/upx-ucl*
+  dpkg -i /var/cache/apt/archives/osslsigncode*
 }
 
 function install_amber() {
   colorecho "Installing amber"
   # Installing keystone requirement
   git -C /opt/tools/ clone --depth=1 https://github.com/EgeBalci/keystone
-  cd /opt/tools/keystone/
+  cd /opt/tools/keystone/ || false
   mkdir build
-  cd build
+  cd build || false
   ../make-lib.sh
   cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DLLVM_TARGETS_TO_BUILD="AArch64;X86" -G "Unix Makefiles" ..
   make -j8
@@ -287,13 +312,13 @@ function install_powershell() {
   colorecho "Installing powershell"
   if [[ $(uname -m) = 'x86_64' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/powershell-7.3.0-linux-x64.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-x64.tar.gz
   elif [[ $(uname -m) = 'aarch64' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/powershell-7.3.0-linux-arm64.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-arm64.tar.gz
   elif [[ $(uname -m) = 'armv7l' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.0/powershell-7.3.0-linux-arm32.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-arm32.tar.gz
   else
     criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
   fi
@@ -306,14 +331,14 @@ function install_powershell() {
   add-test-command "powershell -Version"
 }
 
+#TODO: turn into venv
 function install_krbrelayx() {
   # Need pyenv
   colorecho "Installing krbrelayx"
   python3 -m pip install dnspython ldap3
   #python -m pip install dnstool==1.15.0
-  git -C /opt/tools/ clone https://github.com/dirkjanm/krbrelayx
-  cd /opt/tools/krbrelayx/ || exit
-  cp -v /root/sources/grc/conf.krbrelayx /usr/share/grc/conf.krbrelayx
+  git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/krbrelayx
+
   add-aliases krbrelayx
   add-history krbrelayx
   add-test-command "krbrelayx.py --help"
@@ -322,10 +347,16 @@ function install_krbrelayx() {
   add-test-command "printerbug.py --help"
 }
 
+function configure_krbrelayx() {
+  cp -v /root/sources/grc/conf.krbrelayx /usr/share/grc/conf.krbrelayx
+}
+
 function install_evilwinrm() {
-  # Need virtualenv for gem
   colorecho "Installing evil-winrm"
-  gem install evil-winrm
+  git -C /opt/tools/ clone --depth=1 https://github.com/Hackplayers/evil-winrm
+  cd /opt/tools/evil-winrm || false
+  bundle install
+
   add-history evil-winrm
   add-test-command "evil-winrm --help"
 }

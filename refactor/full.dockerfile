@@ -1,8 +1,7 @@
-FROM exegol_code_analysis as code_analysis
-FROM exegol_ad as ad
+FROM nheuillet/exegol-builds:nightly-code-analysis-arm64 as code_analysis
+# FROM exegol_ad as ad
 
-FROM exegol_updated
-
+FROM nheuillet/exegol-builds:nightly-base-arm64
 
 ARG TAG="local"
 ARG VERSION="local"
@@ -19,33 +18,41 @@ WORKDIR /tmp
 COPY --from=code_analysis /tmp/tmp-pipx tmp-pipx
 COPY --from=code_analysis /tmp/tmp-tools tmp-tools
 
-
-RUN cp -RT tmp-pipx /root/.local/pipx/
-
-RUN cp -RT tmp-tools /opt/tools
-
-RUN rm -rf /tmp/tmp-*
-
-COPY --from=ad /tmp/tmp-pipx tmp-pipx
-COPY --from=ad /tmp/tmp-tools tmp-tools
-COPY --from=ad /tmp/tmp-deb tmp-deb
+COPY --from=code_analysis /tmp/tmp-history tmp-history
+COPY --from=code_analysis /tmp/tmp-aliases tmp-aliases
+COPY --from=code_analysis /tmp/tmp-commands tmp-commands
 
 
 RUN cp -RT tmp-pipx /root/.local/pipx/
-
 RUN cp -RT tmp-tools /opt/tools
+RUN cp -RT tmp-history /root/.zsh_history
+RUN cp -RT tmp-aliases /opt/.exegol_aliases
+RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
 
-RUN cp -RT tmp-deb /var/cache/apt/archives
+# RUN rm -rf /tmp/tmp-*
+
+# COPY --from=ad /tmp/tmp-pipx tmp-pipx
+# COPY --from=ad /tmp/tmp-tools tmp-tools
+# COPY --from=ad /tmp/tmp-deb tmp-deb
+
+# Need to merge ~/.zsh_history /opt/.exegol_aliases and test commands (/.exegol/build_pipeline_tests/all_commands.txt)
+
+
+# RUN cp -RT tmp-pipx /root/.local/pipx/
+
+# RUN cp -RT tmp-tools /opt/tools
+
+# RUN cp -RT tmp-deb /var/cache/apt/archives
 
 RUN rm -rf /tmp/tmp-*
 
-ADD sources /root/sources/
+# ADD sources /root/sources/
 
-WORKDIR /root/sources/
+# WORKDIR /root/sources/
 
-RUN chmod +x start.sh
+# RUN chmod +x start.sh
 
-RUN ./start.sh package_ad_configure
+# RUN ./start.sh package_ad_configure
 
 
 WORKDIR /root

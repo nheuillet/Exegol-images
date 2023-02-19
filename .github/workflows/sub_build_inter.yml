@@ -1,4 +1,4 @@
-name: (level 1 sub) Belt
+name: (level 4 sub) Inter Belt
 
 on:
   workflow_call:
@@ -40,44 +40,44 @@ on:
         value: ${{ jobs.export_results.outputs.test }}
 
 jobs:
-  prune:
-    name: Pre-build ${{ inputs.ARCH }} runner clean
+  checker:
+    name: Check
     runs-on:
       - self-hosted
       - builder
       - ${{ inputs.ARCH }}
     steps:
-      - name: Clean build folder
+      - name: Checker
         run: |
-          rm -rf * || true
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
-      - name: Clean unused dangling images
-        # dangling: images that were replaced with ones with the same name and tag
-        run: docker image prune --filter "label=org.exegol.app=Exegol" --force
-      - name: Clean unused volumes
-        run: docker volume prune --force
+          echo "ok"
 
-  build-base:
-    name: Build Base Image
+  build-ca:
+    name: Build Code Analysis Image
     uses: ./.github/workflows/sub_build.yml
-    needs: prune
-    permissions:
-      contents: read
-      packages: write
+    # needs: build-base
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-base
+      IMAGE_BASE_NAME: nightly-code-analysis
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: clean_base.dockerfile
+      DOCKERFILE: code_analysis.dockerfile
       ARCH: ${{ inputs.ARCH }}
-    secrets: inherit
+  
+  # build-ca2:
+  #   name: Build Code Analysis Image 2
+  #   uses: ./.github/workflows/sub_build.yml
+  #   # needs: build-base
+  #   with:
+  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+  #     IMAGE_BASE_NAME: nightly-code-analysis
+  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
+  #     ARCH: ${{ inputs.ARCH }}
+  
+  
 
   # test:
   #   name: Test
   #   needs:
-  #     - build-base
   #     - build-ca
   #   uses: ./.github/workflows/sub_test.yml
   #   with:

@@ -1,4 +1,4 @@
-FROM exegol_updated as build
+FROM nheuillet/exegol-builds:nightly-base-arm64 as build
 
 ADD sources /root/sources
 
@@ -27,3 +27,6 @@ WORKDIR /tmp
 
 COPY --from=build /root/.local/pipx tmp-pipx
 COPY --from=build /opt/tools tmp-tools
+COPY --from=build /root/.zsh_history tmp-history
+COPY --from=build /opt/.exegol_aliases tmp-aliases
+COPY --from=build /.exegol/build_pipeline_tests/all_commands.txt tmp-commands

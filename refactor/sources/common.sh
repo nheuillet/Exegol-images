@@ -92,7 +92,6 @@ function install_pipx_git_tool() {
    fi
 }
 
-
 function install_pipx_tool() {
    colorecho "Installing $1 with pipx"
    python3 -m pipx install $1
@@ -102,6 +101,6 @@ function install_pipx_tool() {
    fi
    if [[ "$*" == *"history"* ]]
    then
-       add-history $1
+      add-history $1
    fi
  }
