@@ -30,23 +30,23 @@ function package_ad() {
   install_powershell              # Windows Powershell for Linux
   install_krbrelayx               # Kerberos unconstrained delegation abuse toolkit
   install_evilwinrm               # WinRM shell
-#   install_pypykatz                # Mimikatz implementation in pure Python
-#   install_enyx                    # Hosts discovery
-#   install_enum4linux-ng           # Hosts enumeration
-#   install_zerologon               # Exploit for zerologon cve-2020-1472
-#   install_libmspack               # Library for some loosely related Microsoft compression format
-#   install_windapsearch-go         # Active Directory Domain enumeration through LDAP queries
-#   install_oaburl                  # Send request to the MS Exchange Autodiscover service
-#   install_lnkup
-#   install_samdump2                # Dumps Windows 2k/NT/XP/Vista password hashes
-#   install_smbclient               # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
-#   install_polenum
-#   install_smbmap                  # Allows users to enumerate samba share drives across an entire domain
-#   install_pth-tools               # Pass the hash attack
-#   install_smtp-user-enum          # SMTP user enumeration via VRFY, EXPN and RCPT
-#   install_onesixtyone             # SNMP scanning
-#   install_nbtscan                 # NetBIOS scanning tool
-#   install_rpcbind                 # RPC scanning
+  install_pypykatz                # Mimikatz implementation in pure Python
+  install_enyx                    # Hosts discovery
+  install_enum4linux-ng           # Hosts enumeration
+  install_zerologon               # Exploit for zerologon cve-2020-1472
+  install_libmspack               # Library for some loosely related Microsoft compression format
+  install_windapsearch-go         # Active Directory Domain enumeration through LDAP queries
+  install_oaburl                  # Send request to the MS Exchange Autodiscover service
+  install_lnkup
+  install_samdump2                # Dumps Windows 2k/NT/XP/Vista password hashes
+  install_smbclient               # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
+  install_polenum
+  install_smbmap                  # Allows users to enumerate samba share drives across an entire domain
+  install_pth-tools               # Pass the hash attack
+  install_smtp-user-enum          # SMTP user enumeration via VRFY, EXPN and RCPT
+  install_onesixtyone             # SNMP scanning
+  install_nbtscan                 # NetBIOS scanning tool
+  install_rpcbind                 # RPC scanning
 #   install_gpp-decrypt             # Decrypt a given GPP encrypted string
 #   install_ntlmv1-multi            # NTLMv1 multi tools: modifies NTLMv1/NTLMv1-ESS/MSCHAPv2
 #   install_hashonymize             # Anonymize NTDS, ASREProast, Kerberoast hashes for remote cracking
@@ -94,6 +94,11 @@ function package_ad_configure() {
   configure_impacket
   configure_darkarmour
   configure_krbrelayx
+  configure_samdump2
+  configure_smbclient
+  configure_pth-tools
+  configure_smtp-user-enum
+  configure_onesixtyone
 }
 
 function install_responder() {
@@ -360,3 +365,232 @@ function install_evilwinrm() {
   add-history evil-winrm
   add-test-command "evil-winrm --help"
 }
+
+function install_pypykatz() {
+  colorecho "Installing pypykatz"
+  python3 -m pipx install pypykatz
+  python3 -m pipx inject pypykatz minikerberos==0.3.5
+  add-history pypykatz
+  add-test-command "pypykatz version"
+}
+
+function install_enyx() {
+  colorecho "Installing enyx"
+  git -C /opt/tools/ clone --depth=1 https://github.com/trickster0/Enyx
+  add-aliases enyx
+  add-history enyx
+  add-test-command "enyx"
+}
+
+function install_enum4linux-ng() {
+  colorecho "Installing enum4linux-ng"
+  python3 -m pipx install git+https://github.com/cddmp/enum4linux-ng
+  add-history enum4linux-ng
+  add-test-command "enum4linux-ng --help"
+}
+
+function install_zerologon() {
+  colorecho "Pulling CVE-2020-1472 exploit and scan scripts"
+  git -C /opt/tools/ clone --depth=1 https://github.com/SecuraBV/CVE-2020-1472
+  mv /opt/tools/CVE-2020-1472 /opt/tools/zerologon-scan
+  git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/CVE-2020-1472
+  mv /opt/tools/CVE-2020-1472 /opt/tools/zerologon-exploit
+  add-aliases zerologon
+  add-history zerologon
+  add-test-command "zerologon-scan; zerologon-scan | grep Usage"
+}
+
+function install_libmspack() {
+  colorecho "Installing libmspack"
+  git -C /opt/tools/ clone --depth=1 https://github.com/kyz/libmspack.git
+  cd /opt/tools/libmspack/libmspack || false
+  ./rebuild.sh
+  ./configure
+  make
+  add-aliases libmspack
+  add-test-command "oabextract"
+}
+
+function install_windapsearch-go() {
+  colorecho "Installing Go windapsearch"
+  # TODO: check if it really works, but it should
+
+  go install github.com/ropnop/go-windapsearch@latest
+
+
+  # if [[ $(uname -m) = 'x86_64' ]]
+  # then
+  #   wget -O /opt/tools/bin/windapsearch "https://github.com/ropnop/go-windapsearch/releases/latest/download/windapsearch-linux-amd64"
+  # else
+  #   criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+  # fi
+  # chmod +x /opt/tools/bin/windapsearch
+  add-history windapsearch
+  add-test-command "windapsearch --help"
+}
+
+function install_oaburl() {
+  colorecho "Downloading oaburl.py"
+  mkdir /opt/tools/OABUrl
+  wget -O /opt/tools/OABUrl/oaburl.py "https://gist.githubusercontent.com/snovvcrash/4e76aaf2a8750922f546eed81aa51438/raw/96ec2f68a905eed4d519d9734e62edba96fd15ff/oaburl.py"
+  chmod +x /opt/tools/OABUrl/oaburl.py
+  add-aliases oaburl
+  add-history oaburl
+  add-test-command "oaburl.py --help"
+}
+
+# TODO: check that the venv does work
+function install_lnkup() {
+  colorecho "Installing LNKUp"
+  git -C /opt/tools/ clone https://github.com/Plazmaz/LNKUp
+  cd /opt/tools/LNKUp || false
+  python -m venv ./venv/
+  source venv/bin/activate
+  python -m pip install -r requirements.txt
+  deactivate
+  add-aliases lnkup
+  add-history lnkup
+  add-test-command "lnk-generate.py --help"
+}
+
+function install_samdump2() {
+  colorecho "Installing samdump2"
+  fapt --download-only samdump2
+  add-test-command "samdump2 -h; samdump2 -h |& grep 'enable debugging'"
+}
+
+function configure_samdump2() {
+  dpkg -i /var/cache/apt/archives/samdump2*
+}
+
+function install_smbclient() {
+  colorecho "Installing smbclient"
+  fapt --download-only smbclient
+  add-history smbclient
+  add-test-command "smbclient --help"
+}
+
+function configure_smbclient() {
+  dpkg -i /var/cache/apt/archives/libtalloc*
+  dpkg -i /var/cache/apt/archives/libtevent*
+  dpkg -i /var/cache/apt/archives/libtdb*
+  dpkg -i /var/cache/apt/archives/libwbclient*
+  dpkg -i /var/cache/apt/archives/libarchive*
+  dpkg -i /var/cache/apt/archives/libjansson*
+  dpkg -i /var/cache/apt/archives/libldb*
+  dpkg -i /var/cache/apt/archives/libsmbclient*
+  dpkg -i /var/cache/apt/archives/samba-libs*
+  dpkg -i /var/cache/apt/archives/samba-common*
+  dpkg -i /var/cache/apt/archives/python3-ldb*
+  dpkg -i /var/cache/apt/archives/python3-talloc*
+  dpkg -i /var/cache/apt/archives/smbclient*
+}
+
+function install_polenum() {
+  colorecho "Installing polenum"
+  git -C /opt/tools/ clone --depth=1 https://github.com/Wh1t3Fox/polenum
+  python3 -m venv ./venv/
+  source venv/bin/activate
+  python3 -m pip install impacket
+  deactivate
+
+  add-aliases polenum
+  add-history polenum
+  add-test-command "polenum.py --help"
+}
+
+# TODO: check venv (alias)
+function install_smbmap(){
+  colorecho "Installing smbmap"
+  git -C /opt/tools/ clone --depth=1 https://github.com/ShawnDEvans/smbmap
+  cd /opt/tools/smbmap || false
+
+  python3 -m venv ./venv/
+  source venv/bin/activate
+  python3 -m pip install -r requirements
+  deactivate
+  # This doesn't seem to be the case anymore?
+  # # installing requirements manually to skip impacket overwrite
+  # # wish we could install smbmap in virtual environment :'(
+  # python3 -m pip install pyasn1 pycrypto configparser termcolor impacket
+  add-aliases smbmap
+  add-history smbmap
+  add-test-command "smbmap --help"
+}
+
+function install_pth-tools(){
+  colorecho "Installing pth-tools"
+  git -C /opt/tools clone --depth=1 https://github.com/byt3bl33d3r/pth-toolkit
+  cd /opt/tools/pth-toolkit || true
+  if [[ $(uname -m) = 'x86_64' ]]
+  then
+    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_amd64.deb
+    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_amd64.deb
+  elif [[ $(uname -m) = 'aarch64' ]]
+  then
+    criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+    # FIXME
+    #16 428.9  libreadline6:armhf : Depends: libc6:armhf (>= 2.15) but it is not installable
+    #16 428.9                       Depends: libtinfo5:armhf but it is not installable
+    #16 428.9  multiarch-support:armhf : Depends: libc6:armhf (>= 2.13-5) but it is not installable
+    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armhf.deb
+    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armhf.deb
+  elif [[ $(uname -m) = 'armv7l' ]]
+  then
+    criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+    # FIXME ?
+    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armel.deb
+    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armel.deb
+  else
+    criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
+  fi
+  add-aliases pth-tools
+  add-history pth-tools
+  # TODO add-test-command
+}
+
+function configure_pth-tools(){
+  dpkg -i /var/cache/apt/archives/libreadline6_6.3-8+b3.deb
+  dpkg -i /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb
+}
+
+function install_smtp-user-enum(){
+  colorecho "Installing smtp-user-enum"
+  python3 -m pipx install smtp-user-enum
+  add-history smtp-user-enum
+  add-test-command "smtp-user-enum --help"
+}
+
+function install_onesixtyone() {
+  colorecho "Installing onesixtyone"
+  fapt --download-only onesixtyone
+  add-history onesixtyone
+  add-test-command "onesixtyone 127.0.0.1 public"
+}
+
+function configure_onesixtyone() {
+  dpkg -i /var/cache/apt/archives/onesixtyone*
+}
+
+function install_nbtscan() {
+  colorecho "Installing nbtscan"
+  fapt --download-only nbtscan
+  add-history nbtscan
+  add-test-command "nbtscan 127.0.0.1"
+}
+
+function configure_nbtscan() {
+  dpkg -i /var/cache/apt/archives/nbtscan*
+}
+
+function install_rpcbind() {
+  colorecho "Installing rpcbind"
+  # Pretty sure rpcbind is already installed, se we're skipping
+  # fapt --download-only rpcbind
+  add-test-command "rpcbind"
+}
+
+# function configure_rpcbind() {
+#   dpkg -i /var/cache/apt/archives/rpcbind*
+
+# }
