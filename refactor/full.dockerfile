@@ -60,6 +60,10 @@ RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
 
 # TODO
 
+# Misc
+
+# TODO
+
 # Create pipx symbolic links
 
 WORKDIR /root/sources/

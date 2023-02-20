@@ -15,18 +15,6 @@ RUN ./get_pipx_symlink.sh
 
 FROM alpine:3.17.2
 
-ARG TAG="local"
-ARG VERSION="local"
-ARG BUILD_DATE="n/a"
-
-LABEL org.exegol.tag="${TAG}"
-LABEL org.exegol.version="${VERSION}"
-LABEL org.exegol.build_date="${BUILD_DATE}"
-LABEL org.exegol.app="ExegolCodeAnalysis"
-LABEL org.exegol.src_repository="https://github.com/ThePorgs/Exegol-images"
-
-RUN echo "${TAG}-${VERSION}" > /opt/.exegol_version
-
 WORKDIR /tmp
 
 COPY --from=build /root/.local/pipx tmp-pipx

@@ -70,15 +70,15 @@ jobs:
       DOCKERFILE: wordlists.dockerfile
       ARCH: ${{ inputs.ARCH }}
 
-  # build-ca4:
-  #   name: Build Code Analysis Image 4
-  #   uses: ./.github/workflows/sub_build.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: nightly-code-analysis
-  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
-  #     ARCH: ${{ inputs.ARCH }}
+  build-misc:
+    name: Build Misc Image
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: misc
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: misc.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
   # build-ca5:
   #   name: Build Code Analysis Image 5
