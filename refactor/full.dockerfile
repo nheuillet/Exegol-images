@@ -1,7 +1,7 @@
-FROM nheuillet/exegol-builds:nightly-code-analysis-arm64 as code_analysis
-FROM nheuillet/exegol-builds:nightly-ad-arm64 as ad
+FROM nheuillet/exegol-builds:code-analysis-arm64 as code_analysis
+FROM nheuillet/exegol-builds:ad-arm64 as ad
 
-FROM nheuillet/exegol-builds:nightly-base-arm64
+FROM nheuillet/exegol-builds:base-arm64
 
 ARG TAG="local"
 ARG VERSION="local"
@@ -55,6 +55,10 @@ RUN cp -RT tmp-history /root/.zsh_history
 RUN cp -RT tmp-aliases /opt/.exegol_aliases
 RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
 RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
+
+# Wordlists
+
+# TODO
 
 # Create pipx symbolic links
 

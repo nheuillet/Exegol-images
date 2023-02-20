@@ -45,7 +45,7 @@ jobs:
     uses: ./.github/workflows/sub_build.yml
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_BASE_NAME: code-analysis
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
       DOCKERFILE: code_analysis.dockerfile
       ARCH: ${{ inputs.ARCH }}
@@ -55,20 +55,20 @@ jobs:
     uses: ./.github/workflows/sub_build.yml
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-ad
+      IMAGE_BASE_NAME: ad
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
       DOCKERFILE: ad.dockerfile
       ARCH: ${{ inputs.ARCH }}
 
-  # build-ca3:
-  #   name: Build Code Analysis Image 3
-  #   uses: ./.github/workflows/sub_build.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: nightly-code-analysis
-  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
-  #     ARCH: ${{ inputs.ARCH }}
+  build-wordlists:
+    name: Build Wordlists Image
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-code-analysis
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/wordlists.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
   # build-ca4:
   #   name: Build Code Analysis Image 4

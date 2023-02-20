@@ -1,4 +1,4 @@
-FROM nheuillet/exegol-builds:nightly-base-arm64
+FROM nheuillet/exegol-builds:base-arm64
 
 ARG TAG="local"
 ARG VERSION="local"

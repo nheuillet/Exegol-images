@@ -1,4 +1,4 @@
-FROM nheuillet/exegol-builds:nightly-base-arm64 as build
+FROM nheuillet/exegol-builds:base-arm64 as build
 
 ADD sources /root/sources
 
