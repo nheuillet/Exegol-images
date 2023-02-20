@@ -56,7 +56,7 @@ jobs:
       - name: Build and push the image
         if: success()
         run: |
-          cd ./refactor
+          cd ./refactor||true
           docker build -f ${{ inputs.DOCKERFILE }} -t ${{ inputs.DOCKER_BUILD_REPO }}:${{ inputs.IMAGE_BASE_NAME }}-${{ inputs.ARCH }} .
       - name: Remove dangling images
         run: docker rmi $(docker images -f "dangling=true" -q)||true
