@@ -36,6 +36,10 @@ COPY --from=ad /tmp/tmp-tools tmp-tools
 COPY --from=ad /tmp/tmp-deb tmp-deb
 COPY --from=ad /tmp/tmp-go tmp-go
 
+COPY --from=ad /tmp/tmp-history tmp-history
+COPY --from=ad /tmp/tmp-aliases tmp-aliases
+COPY --from=ad /tmp/tmp-commands tmp-commands
+
 RUN cp -RT tmp-pipx /root/.local/pipx/
 RUN cp -RT tmp-tools /opt/tools
 RUN cp -RT tmp-deb /opt/packages
