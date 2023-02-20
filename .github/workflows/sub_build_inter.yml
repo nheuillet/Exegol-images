@@ -57,7 +57,7 @@ jobs:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
       IMAGE_BASE_NAME: nightly-ad
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: ./refactor/ad.dockerfile
+      DOCKERFILE: ad.dockerfile
       ARCH: ${{ inputs.ARCH }}
 
   # build-ca3:
