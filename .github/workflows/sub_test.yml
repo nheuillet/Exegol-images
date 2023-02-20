@@ -15,7 +15,7 @@ on:
 
 jobs:
   test:
-    name: Tests ${{ inputs.ARCH }}
+    name: Tests (${{ inputs.ARCH }})
     runs-on:
       - self-hosted
       - tester

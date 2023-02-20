@@ -63,13 +63,9 @@ jobs:
     name: Build Base Image
     uses: ./.github/workflows/sub_build.yml
     needs: prune
-    permissions:
-      contents: read
-      packages: write
     with:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-      IMAGE_BASE_NAME: nightly-base
+      IMAGE_BASE_NAME: base-image
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
       DOCKERFILE: clean_base.dockerfile
       ARCH: ${{ inputs.ARCH }}
-    secrets: inherit

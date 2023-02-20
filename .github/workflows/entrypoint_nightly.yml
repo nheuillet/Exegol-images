@@ -32,7 +32,7 @@ jobs:
           echo "IMAGE_BASE_NAME=${IMAGE_BASE_NAME}" >> $GITHUB_OUTPUT
 
   base_build_belt:
-    name: Base build belt
+    name: Base Building Belt
     needs: varset
     strategy:
       fail-fast: false
@@ -49,7 +49,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   
   images_build_belt:
-    name: Images build belt
+    name: Intermediate Images Building Belt
     needs:
      - varset
      - base_build_belt
@@ -68,7 +68,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   
   full_build_belt:
-    name: Image full build belt
+    name: Final Images Building Belt
     needs:
       - varset
       - images_build_belt
