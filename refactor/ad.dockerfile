@@ -27,5 +27,5 @@ WORKDIR /tmp
 
 COPY --from=build /root/.local/pipx tmp-pipx
 COPY --from=build /opt/tools tmp-tools
-COPY --from=build /var/cache/apt/archives tmp-deb
+COPY --from=build /opt/packages tmp-deb
 COPY --from=build /root/go/bin/ tmp-go

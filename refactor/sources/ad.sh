@@ -92,12 +92,10 @@ function package_ad_configure() {
   configure_bloodhound
   configure_neo4j
   configure_impacket
-  configure_darkarmour
   configure_krbrelayx
   configure_samdump2
   configure_smbclient
   configure_pth-tools
-  configure_smtp-user-enum
   configure_onesixtyone
   configure_powershell
 }
@@ -105,15 +103,15 @@ function package_ad_configure() {
 function install_responder() {
   colorecho "Installing Responder"
   git -C /opt/tools/ clone --depth=1 https://github.com/lgandx/Responder
-  fapt --download-only gcc-mingw-w64-x86-64 python3-netifaces
+  fapt-deps python3-netifaces
   add-aliases responder
   add-history responder
   add-test-command "responder --version"
 }
 
 function configure_responder() {
-  dpkg -i /var/cache/apt/archives/gcc-mingw-w64-x86-64*
-  dpkg -i /var/cache/apt/archives/python3-netifaces*
+  colorecho "Configure responder"
+  dpkg -i /opt/packages/python3-netifaces*
   sed -i 's/ Random/ 1122334455667788/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/AccessDenied.html/\/opt\/tools\/Responder\/files\/AccessDenied.html/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/BindShell.exe/\/opt\/tools\/Responder\/files\/BindShell.exe/g' /opt/tools/Responder/Responder.conf
@@ -134,6 +132,7 @@ function install_crackmapexec() {
 }
 
 function configure_crackmapexec() {
+  colorecho "Configure crackmapexec"
   ~/.local/bin/crackmapexec || true
   mkdir -p ~/.cme
   [ -f ~/.cme/cme.conf ] && mv ~/.cme/cme.conf ~/.cme/cme.conf.bak
@@ -158,6 +157,7 @@ function install_bloodhound() {
 }
 
 function configure_bloodhound() {
+  colorecho "Configure bloodhound"
   zsh -c "source ~/.zshrc && cd /opt/tools/BloodHound4 && nvm install 16.13.0 && nvm use 16.13.0 && npm install -g electron-packager && npm install && npm run build:linux"
   if [[ $(uname -m) = 'x86_64' ]]
   then
@@ -183,17 +183,18 @@ function install_neo4j() {
   wget -O - https://debian.neo4j.com/neotechnology.gpg.key | apt-key add -
   echo 'deb https://debian.neo4j.com stable latest' | tee /etc/apt/sources.list.d/neo4j.list
   apt-get update
-  fapt --download-only neo4j
+  fapt-deps neo4j
 }
 
 function configure_neo4j() {
-  dpkg -i /var/cache/apt/archives/cypher-shell*
-  dpkg -i /var/cache/apt/archives/daemon*
-  dpkg -i /var/cache/apt/archives/neo4j*
+  colorecho "Configure neo4j"
+  dpkg -i /opt/packages/cypher-shell*
+  dpkg -i /opt/packages/daemon*
+  dpkg -i /opt/packages/neo4j*
 
 
   # TODO: when temporary fix is not needed anymore --> neo4j-admin dbms set-initial-password exegol4thewin
-  neo4j-admin set-initial-password exegol4thewin
+  neo4j-admin dbms set-initial-password exegol4thewin
   
   mkdir -p /usr/share/neo4j/logs/
   touch /usr/share/neo4j/logs/neo4j.log
@@ -204,6 +205,7 @@ function configure_neo4j() {
 
 function install_cyperoth() {
   colorecho "Installing cypheroth"
+  fapt-deps cypher-shell daemon
   git -C /opt/tools/ clone --depth=1 https://github.com/seajaysec/cypheroth/
   add-aliases cypheroth
   add-history cypheroth
@@ -238,6 +240,7 @@ function install_impacket() {
 }
 
 function configure_impacket() {
+  colorecho "Configure impacket"
   cp -v /root/sources/grc/conf.ntlmrelayx /usr/share/grc/conf.ntlmrelayx
   cp -v /root/sources/grc/conf.secretsdump /usr/share/grc/conf.secretsdump
   cp -v /root/sources/grc/conf.getgpppassword /usr/share/grc/conf.getgpppassword
@@ -284,19 +287,10 @@ function install_ruler() {
 function install_darkarmour() {
   colorecho "Installing darkarmour"
   git -C /opt/tools/ clone --depth=1 https://github.com/bats3c/darkarmour
-  fapt --download-only mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 upx-ucl osslsigncode # DEPS
+  fapt-deps upx-ucl osslsigncode
   add-aliases darkarmour
   add-history darkarmour
   add-test-command "darkarmour --help"
-}
-
-function configure_darkarmour() {
-  dpkg -i /var/cache/apt/archives/mingw-w64-tools*
-  dpkg -i /var/cache/apt/archives/mingw-w64-common*
-  dpkg -i /var/cache/apt/archives/g++-mingw-w64*
-  dpkg -i /var/cache/apt/archives/gcc-mingw-w64*
-  dpkg -i /var/cache/apt/archives/upx-ucl*
-  dpkg -i /var/cache/apt/archives/osslsigncode*
 }
 
 function install_amber() {
@@ -320,13 +314,13 @@ function install_powershell() {
   colorecho "Installing powershell"
   if [[ $(uname -m) = 'x86_64' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-x64.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.2-linux-x64.tar.gz
   elif [[ $(uname -m) = 'aarch64' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-arm64.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.2-linux-arm64.tar.gz
   elif [[ $(uname -m) = 'armv7l' ]]
   then
-    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.0-linux-arm32.tar.gz
+    curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell-7.3.2-linux-arm32.tar.gz
   else
     criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
   fi
@@ -338,6 +332,7 @@ function install_powershell() {
 }
 
 function configure_powershell() {
+  colorecho "Configure powershell"
   ln -v -s /opt/tools/powershell/7/pwsh /opt/tools/bin/pwsh
   ln -v -s /opt/tools/bin/pwsh /opt/tools/bin/powershell
 }
@@ -359,6 +354,7 @@ function install_krbrelayx() {
 }
 
 function configure_krbrelayx() {
+  colorecho "Configure krbrelayx"
   cp -v /root/sources/grc/conf.krbrelayx /usr/share/grc/conf.krbrelayx
 }
 
@@ -419,20 +415,16 @@ function install_libmspack() {
 
 function install_windapsearch-go() {
   colorecho "Installing Go windapsearch"
-  # TODO: check if it really works, but it should
+  git -C /opt/tools/ clone https://github.com/magefile/mage
+  cd /opt/tools/mage
+  go run bootstrap.go
 
-  go install github.com/ropnop/go-windapsearch@latest
-
-
-  # if [[ $(uname -m) = 'x86_64' ]]
-  # then
-  #   wget -O /opt/tools/bin/windapsearch "https://github.com/ropnop/go-windapsearch/releases/latest/download/windapsearch-linux-amd64"
-  # else
-  #   criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
-  # fi
-  # chmod +x /opt/tools/bin/windapsearch
+  git -C /opt/tools/ clone --depth=1 https://github.com/ropnop/go-windapsearch
+  cd /opt/tools/go-windapsearch
+  /root/go/bin/mage build
+  add-aliases windapsearch
   add-history windapsearch
-  add-test-command "windapsearch --help"
+  add-test-command "windapsearch --version"
 }
 
 function install_oaburl() {
@@ -450,9 +442,9 @@ function install_lnkup() {
   colorecho "Installing LNKUp"
   git -C /opt/tools/ clone https://github.com/Plazmaz/LNKUp
   cd /opt/tools/LNKUp || false
-  python -m venv ./venv/
+  python3 -m venv ./venv/
   source venv/bin/activate
-  python -m pip install -r requirements.txt
+  python3 -m pip install -r requirements.txt
   deactivate
   add-aliases lnkup
   add-history lnkup
@@ -461,35 +453,43 @@ function install_lnkup() {
 
 function install_samdump2() {
   colorecho "Installing samdump2"
-  fapt --download-only samdump2
+  fapt-deps samdump2
   add-test-command "samdump2 -h; samdump2 -h |& grep 'enable debugging'"
 }
 
 function configure_samdump2() {
-  dpkg -i /var/cache/apt/archives/samdump2*
+  colorecho "Configure samdump2"
+  dpkg -i /opt/packages/samdump2*
 }
 
 function install_smbclient() {
   colorecho "Installing smbclient"
-  fapt --download-only smbclient
+  fapt-deps smbclient
   add-history smbclient
   add-test-command "smbclient --help"
 }
 
 function configure_smbclient() {
-  dpkg -i /var/cache/apt/archives/libtalloc*
-  dpkg -i /var/cache/apt/archives/libtevent*
-  dpkg -i /var/cache/apt/archives/libtdb*
-  dpkg -i /var/cache/apt/archives/libwbclient*
-  dpkg -i /var/cache/apt/archives/libarchive*
-  dpkg -i /var/cache/apt/archives/libjansson*
-  dpkg -i /var/cache/apt/archives/libldb*
-  dpkg -i /var/cache/apt/archives/libsmbclient*
-  dpkg -i /var/cache/apt/archives/samba-libs*
-  dpkg -i /var/cache/apt/archives/samba-common*
-  dpkg -i /var/cache/apt/archives/python3-ldb*
-  dpkg -i /var/cache/apt/archives/python3-talloc*
-  dpkg -i /var/cache/apt/archives/smbclient*
+  colorecho "Configure smbclient"
+  # TODO : A lot of deps -_-
+
+  # sensible-utils
+  # ucf
+  # dpkg -i /opt/packages/samba-common*
+  # dpkg -i /opt/packages/samba-libs*
+  # dpkg -i /opt/packages/libarchive13*
+  # libmd0
+  # dpkg -i /opt/packages/libbsd0*
+  # dpkg -i /opt/packages/libpopt0*
+  # dpkg -i /opt/packages/libreadline8*
+  # dpkg -i /opt/packages/libsmbclient*
+  # dpkg -i /opt/packages/libtalloc2*
+  # dpkg -i /opt/packages/libtevent0*
+  # libicu67
+
+  # dpkg -i /opt/packages/libwbclient0*
+  
+  # dpkg -i /opt/packages/smbclient*
 }
 
 function install_polenum() {
@@ -512,9 +512,7 @@ function install_smbmap(){
   cd /opt/tools/smbmap || false
 
   python3 -m venv ./venv/
-  source venv/bin/activate
-  python3 -m pip install -r requirements
-  deactivate
+  ./venv/bin/python3 -m pip install -r requirements.txt
   # This doesn't seem to be the case anymore?
   # # installing requirements manually to skip impacket overwrite
   # # wish we could install smbmap in virtual environment :'(
@@ -530,8 +528,8 @@ function install_pth-tools(){
   cd /opt/tools/pth-toolkit || true
   if [[ $(uname -m) = 'x86_64' ]]
   then
-    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_amd64.deb
-    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_amd64.deb
+    wget -O /opt/packages/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_amd64.deb
+    wget -O /opt/packages/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_amd64.deb
   elif [[ $(uname -m) = 'aarch64' ]]
   then
     criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
@@ -539,14 +537,14 @@ function install_pth-tools(){
     #16 428.9  libreadline6:armhf : Depends: libc6:armhf (>= 2.15) but it is not installable
     #16 428.9                       Depends: libtinfo5:armhf but it is not installable
     #16 428.9  multiarch-support:armhf : Depends: libc6:armhf (>= 2.13-5) but it is not installable
-    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armhf.deb
-    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armhf.deb
+    wget -O /opt/packages/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armhf.deb
+    wget -O /opt/packages/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armhf.deb
   elif [[ $(uname -m) = 'armv7l' ]]
   then
     criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
     # FIXME ?
-    wget -O /var/cache/apt/archives/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armel.deb
-    wget -O /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armel.deb
+    wget -O /opt/packages/libreadline6_6.3-8+b3.deb http://ftp.debian.org/debian/pool/main/r/readline6/libreadline6_6.3-8+b3_armel.deb
+    wget -O /opt/packages/multiarch-support_2.19-18+deb8u10.deb http://ftp.debian.org/debian/pool/main/g/glibc/multiarch-support_2.19-18+deb8u10_armel.deb
   else
     criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
   fi
@@ -556,8 +554,10 @@ function install_pth-tools(){
 }
 
 function configure_pth-tools(){
-  dpkg -i /var/cache/apt/archives/libreadline6_6.3-8+b3.deb
-  dpkg -i /var/cache/apt/archives/multiarch-support_2.19-18+deb8u10.deb
+  colorecho "Configure pth-tools"
+  # FIXME
+  #  dpkg -i /opt/packages/libreadline6_6.3-8+b3.deb
+  # dpkg -i /opt/packages/multiarch-support_2.19-18+deb8u10.deb
 }
 
 function install_smtp-user-enum(){
@@ -569,24 +569,26 @@ function install_smtp-user-enum(){
 
 function install_onesixtyone() {
   colorecho "Installing onesixtyone"
-  fapt --download-only onesixtyone
+  fapt-deps onesixtyone
   add-history onesixtyone
   add-test-command "onesixtyone 127.0.0.1 public"
 }
 
 function configure_onesixtyone() {
-  dpkg -i /var/cache/apt/archives/onesixtyone*
+  colorecho "Configure onesixtyone"
+  dpkg -i /opt/packages/onesixtyone*
 }
 
 function install_nbtscan() {
   colorecho "Installing nbtscan"
-  fapt --download-only nbtscan
+  fapt-deps nbtscan
   add-history nbtscan
   add-test-command "nbtscan 127.0.0.1"
 }
 
 function configure_nbtscan() {
-  dpkg -i /var/cache/apt/archives/nbtscan*
+  colorecho "Configure nbtscan"
+  dpkg -i /opt/packages/nbtscan*
 }
 
 function install_rpcbind() {
@@ -597,6 +599,6 @@ function install_rpcbind() {
 }
 
 # function configure_rpcbind() {
-#   dpkg -i /var/cache/apt/archives/rpcbind*
+#   dpkg -i /opt/packages/rpcbind*
 
 # }

@@ -1,5 +1,5 @@
 FROM nheuillet/exegol-builds:nightly-code-analysis-arm64 as code_analysis
-# FROM exegol_ad as ad
+FROM nheuillet/exegol-builds:nightly-ad-arm64 as ad
 
 FROM nheuillet/exegol-builds:nightly-base-arm64
 
@@ -37,12 +37,12 @@ COPY --from=ad /tmp/tmp-deb tmp-deb
 COPY --from=ad /tmp/tmp-go tmp-go
 
 RUN cp -RT tmp-pipx /root/.local/pipx/
-
 RUN cp -RT tmp-tools /opt/tools
-
-RUN cp -RT tmp-deb /var/cache/apt/archives
-
+RUN cp -RT tmp-deb /opt/packages
 RUN cp -RT tmp-go /root/go/bin/
+RUN cp -RT tmp-history /root/.zsh_history
+RUN cp -RT tmp-aliases /opt/.exegol_aliases
+RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
 
 RUN rm -rf /tmp/tmp-*
 

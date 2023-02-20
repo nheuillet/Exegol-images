@@ -29,13 +29,14 @@ function package_base() {
 
   fapt man git lsb-release pciutils pkg-config zip unzip kmod gnupg2 python2 wget \
   gnupg2 python2-dev python3-dev python3-venv libffi-dev python3-pip zsh asciinema \
-  python-setuptools python3-setuptools npm gem automake autoconf make gcc g++ file lsof \
+  python-setuptools python3-setuptools npm gem automake autoconf make cmake time gcc g++ file lsof \
   less x11-apps net-tools vim nano jq iputils-ping iproute2 tidy mlocate libtool \
   dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
   screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev bundler \
   nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils \
-  libsasl2-dev libldap2-dev libgbm1
+  libsasl2-dev libldap2-dev libgbm1 mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 gcc-mingw-w64-x86-64
   
+  # mingw => darkarmour
   # libsasl2-dev libldap2-dev  => sprayhound
   # libgbm1 => Bloodhound
   # cypher-shell daemon => neo4j
@@ -158,6 +159,8 @@ function deploy_exegol() {
   colorecho "Installing Exegol things"
   # Moving exegol files to /
   # It's copied and not moved for caching and updating purposes (reusing exegol_base to create exegol_base)
+  mkdir -p /opt/packages
+  chown -Rv _apt:root /opt/packages
   rm -rf /.exegol || true
   cp -r /root/sources/exegol /.exegol
   # Moving supported custom configurations in /opt
