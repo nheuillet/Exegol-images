@@ -47,7 +47,6 @@ function package_base() {
 
   ln -fs /usr/bin/python2.7 /usr/bin/python # Default python is set to 2.7
   install_python-pip              # Pip. Should we set pip2 to default?
-  python -m pip install venv
   python3 -m pip install --upgrade pip
   filesystem
   install_go                      # Golang language
