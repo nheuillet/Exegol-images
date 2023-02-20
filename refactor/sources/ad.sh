@@ -97,6 +97,7 @@ function package_ad_configure() {
   configure_smbclient
   configure_pth-tools
   configure_onesixtyone
+  configure_nbtscan
   configure_powershell
 }
 
@@ -143,11 +144,8 @@ function configure_crackmapexec() {
 }
 
 function install_bloodhound-py() {
-  # FIXME (can pipx install)
   colorecho "Installing and Python ingestor for BloodHound"
-  #python3 -m pipx install git+https://github.com/fox-it/BloodHound.py
-
-  git -C /opt/tools/ clone --depth=1 https://github.com/fox-it/BloodHound.py
+  python3 -m pipx install git+https://github.com/fox-it/BloodHound.py
   add-aliases bloodhound-py
   add-history bloodhound-py
   add-test-command "bloodhound.py --help"
@@ -261,6 +259,9 @@ function install_pykek() {
 function install_privexchange() {
   colorecho "Installing privexchange"
   git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/PrivExchange
+  cd /opt/tools/PrivExchange
+  python3 -m venv ./venv
+  ./venv/bin/python3 -m pip install impacket
   add-aliases privexchange
   add-history privexchange
   add-test-command "privexchange.py --help"
@@ -362,9 +363,9 @@ function configure_krbrelayx() {
 function install_evilwinrm() {
   colorecho "Installing evil-winrm"
   git -C /opt/tools/ clone --depth=1 https://github.com/Hackplayers/evil-winrm
-  cd /opt/tools/evil-winrm || false
-  bundle install # /usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb:85:in `require': cannot load such file -- winrm (LoadError)
-  # Need to bundle install :/
+  cd /opt/tools/evil-winrm
+  mkdir -p ./vendor/bundle
+  bundle install --path ./vendor/bundle
   add-history evil-winrm
   add-test-command "evil-winrm --help"
 }
@@ -445,11 +446,9 @@ function install_oaburl() {
 function install_lnkup() {
   colorecho "Installing LNKUp"
   git -C /opt/tools/ clone https://github.com/Plazmaz/LNKUp
-  cd /opt/tools/LNKUp || false
-  python3 -m venv ./venv/
-  source venv/bin/activate
-  python3 -m pip install -r requirements.txt
-  deactivate
+  cd /opt/tools/LNKUp
+  virtualenv --python=/usr/bin/python2.7 ./venv
+  ./venv/bin/python2 -m pip install -r requirements.txt
   add-aliases lnkup
   add-history lnkup
   add-test-command "lnk-generate.py --help"

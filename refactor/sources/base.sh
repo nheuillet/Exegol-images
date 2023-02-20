@@ -34,7 +34,8 @@ function package_base() {
   dos2unix ftp sshpass telnet nfs-common ncat netcat-traditional socat rdate putty \
   screen p7zip-full p7zip-rar unrar xz-utils xsltproc parallel tree ruby ruby-dev bundler \
   nim perl openjdk-17-jre openvpn openresolv logrotate tmux tldr bat python3-pyftpdlib libxml2-utils \
-  libsasl2-dev libldap2-dev libgbm1 mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 gcc-mingw-w64-x86-64
+  libsasl2-dev libldap2-dev libgbm1 mingw-w64-tools mingw-w64-common g++-mingw-w64 gcc-mingw-w64 gcc-mingw-w64-x86-64 \
+  virtualenv
   
   # mingw => darkarmour
   # libsasl2-dev libldap2-dev  => sprayhound
