@@ -67,5 +67,5 @@ jobs:
       DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
       IMAGE_BASE_NAME: nightly-base
       IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-      DOCKERFILE: base.dockerfile
+      DOCKERFILE: clean_base.dockerfile
       ARCH: ${{ inputs.ARCH }}
