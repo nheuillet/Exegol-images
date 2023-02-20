@@ -1,4 +1,4 @@
-FROM exegol_updated as build
+FROM nheuillet/exegol-builds:nightly-base-arm64 as build
 
 ADD sources /root/sources
 
@@ -28,3 +28,4 @@ WORKDIR /tmp
 COPY --from=build /root/.local/pipx tmp-pipx
 COPY --from=build /opt/tools tmp-tools
 COPY --from=build /var/cache/apt/archives tmp-deb
+COPY --from=build /root/go/bin/ tmp-go

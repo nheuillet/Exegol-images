@@ -99,18 +99,21 @@ function package_ad_configure() {
   configure_pth-tools
   configure_smtp-user-enum
   configure_onesixtyone
+  configure_powershell
 }
 
 function install_responder() {
   colorecho "Installing Responder"
   git -C /opt/tools/ clone --depth=1 https://github.com/lgandx/Responder
-  fapt gcc-mingw-w64-x86-64 python3-netifaces
+  fapt --download-only gcc-mingw-w64-x86-64 python3-netifaces
   add-aliases responder
   add-history responder
   add-test-command "responder --version"
 }
 
 function configure_responder() {
+  dpkg -i /var/cache/apt/archives/gcc-mingw-w64-x86-64*
+  dpkg -i /var/cache/apt/archives/python3-netifaces*
   sed -i 's/ Random/ 1122334455667788/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/AccessDenied.html/\/opt\/tools\/Responder\/files\/AccessDenied.html/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/BindShell.exe/\/opt\/tools\/Responder\/files\/BindShell.exe/g' /opt/tools/Responder/Responder.conf
@@ -254,7 +257,7 @@ function install_privexchange() {
   git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/PrivExchange
   add-aliases privexchange
   add-history privexchange
-  add-test-command "python3 /opt/tools/PrivExchange/privexchange.py --help"
+  add-test-command "privexchange.py --help"
 }
 
 function install_ruler() {
@@ -330,10 +333,13 @@ function install_powershell() {
   mkdir -v -p /opt/tools/powershell/7
   tar xvfz /tmp/powershell.tar.gz -C /opt/tools/powershell/7
   chmod -v +x /opt/tools/powershell/7/pwsh
-  ln -v -s /opt/tools/powershell/7/pwsh /opt/tools/bin/pwsh
-  ln -v -s /opt/tools/bin/pwsh /opt/tools/bin/powershell
   rm -v /tmp/powershell.tar.gz
   add-test-command "powershell -Version"
+}
+
+function configure_powershell() {
+  ln -v -s /opt/tools/powershell/7/pwsh /opt/tools/bin/pwsh
+  ln -v -s /opt/tools/bin/pwsh /opt/tools/bin/powershell
 }
 
 #TODO: turn into venv

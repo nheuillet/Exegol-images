@@ -50,15 +50,15 @@ jobs:
       DOCKERFILE: code_analysis.dockerfile
       ARCH: ${{ inputs.ARCH }}
   
-  # build-ca2:
-  #   name: Build Code Analysis Image 2
-  #   uses: ./.github/workflows/sub_build.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: nightly-code-analysis
-  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
-  #     ARCH: ${{ inputs.ARCH }}
+  build-ad:
+    name: Build Active Directory Image
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: nightly-ad
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: ./refactor/ad.dockerfile
+      ARCH: ${{ inputs.ARCH }}
 
   # build-ca3:
   #   name: Build Code Analysis Image 3
