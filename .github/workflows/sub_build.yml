@@ -59,4 +59,4 @@ jobs:
           cd ./refactor
           docker build -f ${{ inputs.DOCKERFILE }} -t ${{ inputs.DOCKER_BUILD_REPO }}:${{ inputs.IMAGE_BASE_NAME }}-${{ inputs.ARCH }} .
       - name: Remove dangling images
-        run: docker rmi $(docker images -f "dangling=true" -q)
+        run: docker rmi $(docker images -f "dangling=true" -q)||true
