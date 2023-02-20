@@ -35,7 +35,7 @@ function configure_crunch() {
 
 function install_seclists() {
   colorecho "Installing Seclists"
-  git -C /opt clone --depth=1 https://github.com/danielmiessler/SecLists.git seclists
+  git -C /opt clone --single-branch --branch master --depth 1 https://github.com/danielmiessler/SecLists.git seclists
   cd /opt/seclists
   rm -r LICENSE .git* CONTRIBUT* .bin
   add-test-command "[ -d '/opt/seclists/Discovery/' ]"
