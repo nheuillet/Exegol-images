@@ -143,7 +143,10 @@ function configure_crackmapexec() {
 }
 
 function install_bloodhound-py() {
+  # FIXME (can pipx install)
   colorecho "Installing and Python ingestor for BloodHound"
+  #python3 -m pipx install git+https://github.com/fox-it/BloodHound.py
+
   git -C /opt/tools/ clone --depth=1 https://github.com/fox-it/BloodHound.py
   add-aliases bloodhound-py
   add-history bloodhound-py
@@ -337,14 +340,12 @@ function configure_powershell() {
   ln -v -s /opt/tools/bin/pwsh /opt/tools/bin/powershell
 }
 
-#TODO: turn into venv
 function install_krbrelayx() {
-  # Need pyenv
   colorecho "Installing krbrelayx"
-  python3 -m pip install dnspython ldap3
-  #python -m pip install dnstool==1.15.0
   git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/krbrelayx
-
+  cd /opt/tools/krbrelayx
+  python3 -m venv ./venv
+  ./venv/bin/python3 -m pip install dnspython ldap3 impacket dsinternals
   add-aliases krbrelayx
   add-history krbrelayx
   add-test-command "krbrelayx.py --help"
@@ -362,8 +363,8 @@ function install_evilwinrm() {
   colorecho "Installing evil-winrm"
   git -C /opt/tools/ clone --depth=1 https://github.com/Hackplayers/evil-winrm
   cd /opt/tools/evil-winrm || false
-  bundle install
-
+  bundle install # /usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb:85:in `require': cannot load such file -- winrm (LoadError)
+  # Need to bundle install :/
   add-history evil-winrm
   add-test-command "evil-winrm --help"
 }
@@ -393,10 +394,11 @@ function install_enum4linux-ng() {
 
 function install_zerologon() {
   colorecho "Pulling CVE-2020-1472 exploit and scan scripts"
-  git -C /opt/tools/ clone --depth=1 https://github.com/SecuraBV/CVE-2020-1472
-  mv /opt/tools/CVE-2020-1472 /opt/tools/zerologon-scan
-  git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/CVE-2020-1472
-  mv /opt/tools/CVE-2020-1472 /opt/tools/zerologon-exploit
+  mkdir /opt/tools/zerologon
+  python3 -m venv /opt/tools/zerologon/venv
+  /opt/tools/zerologon/venv/bin/python3 -m pip install impacket
+  git -C /opt/tools/zerologon clone --depth=1 https://github.com/SecuraBV/CVE-2020-1472 zerologon-scan
+  git -C /opt/tools/zerologon clone --depth=1 https://github.com/dirkjanm/CVE-2020-1472 zerologon-exploit
   add-aliases zerologon
   add-history zerologon
   add-test-command "zerologon-scan; zerologon-scan | grep Usage"
@@ -431,7 +433,9 @@ function install_oaburl() {
   colorecho "Downloading oaburl.py"
   mkdir /opt/tools/OABUrl
   wget -O /opt/tools/OABUrl/oaburl.py "https://gist.githubusercontent.com/snovvcrash/4e76aaf2a8750922f546eed81aa51438/raw/96ec2f68a905eed4d519d9734e62edba96fd15ff/oaburl.py"
-  chmod +x /opt/tools/OABUrl/oaburl.py
+  cd /opt/tools/OABUrl/
+  python3 -m venv ./venv
+  ./venv/bin/python3 -m pip install requests
   add-aliases oaburl
   add-history oaburl
   add-test-command "oaburl.py --help"
@@ -495,11 +499,9 @@ function configure_smbclient() {
 function install_polenum() {
   colorecho "Installing polenum"
   git -C /opt/tools/ clone --depth=1 https://github.com/Wh1t3Fox/polenum
+  cd /opt/tools/polenum
   python3 -m venv ./venv/
-  source venv/bin/activate
-  python3 -m pip install impacket
-  deactivate
-
+  ./venv/bin/python3 -m pip install impacket
   add-aliases polenum
   add-history polenum
   add-test-command "polenum.py --help"

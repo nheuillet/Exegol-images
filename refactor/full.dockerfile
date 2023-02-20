@@ -13,7 +13,11 @@ LABEL org.exegol.build_date="${BUILD_DATE}"
 LABEL org.exegol.app="ExegolFull"
 LABEL org.exegol.src_repository="https://github.com/ThePorgs/Exegol-images"
 
+# Code Analysis
+
 WORKDIR /tmp
+
+ADD sources /root/sources/
 
 COPY --from=code_analysis /tmp/tmp-pipx tmp-pipx
 COPY --from=code_analysis /tmp/tmp-tools tmp-tools
@@ -21,15 +25,17 @@ COPY --from=code_analysis /tmp/tmp-tools tmp-tools
 COPY --from=code_analysis /tmp/tmp-history tmp-history
 COPY --from=code_analysis /tmp/tmp-aliases tmp-aliases
 COPY --from=code_analysis /tmp/tmp-commands tmp-commands
-
+COPY --from=code_analysis /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
 RUN cp -RT tmp-pipx /root/.local/pipx/
 RUN cp -RT tmp-tools /opt/tools
 RUN cp -RT tmp-history /root/.zsh_history
 RUN cp -RT tmp-aliases /opt/.exegol_aliases
 RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
+RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
 
-# RUN rm -rf /tmp/tmp-*
+
+# Active Directory
 
 COPY --from=ad /tmp/tmp-pipx tmp-pipx
 COPY --from=ad /tmp/tmp-tools tmp-tools
@@ -39,6 +45,7 @@ COPY --from=ad /tmp/tmp-go tmp-go
 COPY --from=ad /tmp/tmp-history tmp-history
 COPY --from=ad /tmp/tmp-aliases tmp-aliases
 COPY --from=ad /tmp/tmp-commands tmp-commands
+COPY --from=ad /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
 RUN cp -RT tmp-pipx /root/.local/pipx/
 RUN cp -RT tmp-tools /opt/tools
@@ -47,22 +54,25 @@ RUN cp -RT tmp-go /root/go/bin/
 RUN cp -RT tmp-history /root/.zsh_history
 RUN cp -RT tmp-aliases /opt/.exegol_aliases
 RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
-
-RUN rm -rf /tmp/tmp-*
+RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
 
 # Create pipx symbolic links
 
 WORKDIR /root/sources/
 
-ADD sources /root/sources/
-
 RUN chmod +x start.sh
 
 RUN ./start.sh package_ad_configure
 
-RUN chmod +x pipx_symlink.sh
+# Pipx env setup
 
-RUN ./pipx_symlink.sh
+RUN chmod +x push_pipx_symlink.sh
+
+RUN ./push_pipx_symlink.sh
+
+# Cleanup
+
+RUN rm -rf /tmp/tmp-*
 
 WORKDIR /root
 
