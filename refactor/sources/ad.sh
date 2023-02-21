@@ -5,7 +5,6 @@ source common.sh
 
 # Package dedicated to internal Active Directory tools
 function package_ad() {
-  bundle config path vendor/bundle
 
   set_go_env
   install_responder               # LLMNR, NBT-NS and MDNS poisoner
@@ -13,7 +12,7 @@ function package_ad() {
   install_crackmapexec            # Network scanner
   install_pipx_tool sprayhound "sprayhound --help" history # Password spraying tool
   install_pipx_git_tool "git+https://github.com/ShutdownRepo/smartbrute" "smartbrute" "smartbrute --help" history # Password spraying tool
-  install_bloodhound-py           # AD cartographer
+  install_bloodhound-py           # AD cartographer  
   install_bloodhound
   install_cypheroth                # Bloodhound dependency
 #  # install_mitm6_sources         # Install mitm6 from sources
@@ -41,44 +40,44 @@ function package_ad() {
   install_smbmap                  # Allows users to enumerate samba share drives across an entire domain
   install_pth-tools               # Pass the hash attack
   install_smtp-user-enum          # SMTP user enumeration via VRFY, EXPN and RCPT
-#   install_gpp-decrypt             # Decrypt a given GPP encrypted string
-#   install_ntlmv1-multi            # NTLMv1 multi tools: modifies NTLMv1/NTLMv1-ESS/MSCHAPv2
-#   install_hashonymize             # Anonymize NTDS, ASREProast, Kerberoast hashes for remote cracking
-#   install_gosecretsdump           # secretsdump in Go for heavy files
-#   install_adidnsdump              # enumerate DNS records in Domain or Forest DNS zones
-#   install_pygpoabuse
-#   install_bloodhound-import       # Python script to import BH data to a neo4j db
-#   install_bloodhound-quickwin     # Python script to find quickwins from BH data in a neo4j db
-#   install_ldapsearch-ad           # Python script to find quickwins from basic ldap enum
-#   install_petitpotam              # Python script to coerce auth through MS-EFSR abuse
-#   install_dfscoerce               # Python script to coerce auth through NetrDfsRemoveStdRoot and NetrDfsAddStdRoot abuse
-#   install_coercer                 # Python script to coerce auth through multiple methods
-#   install_pkinittools             # Python scripts to use kerberos PKINIT to obtain TGT
-#   install_pywhisker               # Python script to manipulate msDS-KeyCredentialLink
-#   #install_manspider              # Snaffler-like in Python # FIXME : https://github.com/blacklanternsecurity/MANSPIDER/issues/18
-#   install_targetedKerberoast
-#   install_pcredz
-#   install_pywsus
-#   install_donpapi
-#   install_webclientservicescanner
-#   install_certipy
-#   install_shadowcoerce
-#   install_gmsadumper
-#   install_pylaps
-#   install_finduncommonshares
-#   install_ldaprelayscan
-#   install_goldencopy
-#   install_crackhound
-#   install_kerbrute                # Tool to enumerate and bruteforce AD accounts through kerberos pre-authentication
-#   install_ldeep
+  install_gpp-decrypt             # Decrypt a given GPP encrypted string
+  install_ntlmv1-multi            # NTLMv1 multi tools: modifies NTLMv1/NTLMv1-ESS/MSCHAPv2
+  install_hashonymize             # Anonymize NTDS, ASREProast, Kerberoast hashes for remote cracking
+  install_gosecretsdump           # secretsdump in Go for heavy files
+  install_pipx_git_tool "git+https://github.com/dirkjanm/adidnsdump" adidnsdump "adidnsdump --help" history # enumerate DNS records in Domain or Forest DNS zones
+  install_pygpoabuse
+  install_pipx_tool bloodhound-import "bloodhound-import --help" history
+
+  install_bloodhound-quickwin     # Python script to find quickwins from BH data in a neo4j db
+  install_ldapsearch-ad           # Python script to find quickwins from basic ldap enum
+  install_petitpotam              # Python script to coerce auth through MS-EFSR abuse
+  install_dfscoerce               # Python script to coerce auth through NetrDfsRemoveStdRoot and NetrDfsAddStdRoot abuse
+  install_pipx_tool coercer "coercer --help" history # Python script to coerce auth through multiple methods
+  install_pkinittools             # Python scripts to use kerberos PKINIT to obtain TGT
+  install_pywhisker               # Python script to manipulate msDS-KeyCredentialLink
+  # install_pipx_git_tool "git+https://github.com/blacklanternsecurity/MANSPIDER" manspider "manspider --help" history # # Snaffler-like in Python # FIXME : https://github.com/blacklanternsecurity/MANSPIDER/issues/18
+  install_targetedKerberoast
+  install_pcredz
+  install_pywsus
+  install_donpapi
+  install_pipx_git_tool "git+https://github.com/Hackndo/WebclientServiceScanner" webclientservicescanner "webclientservicescanner --help" history
+  install_pipx_tool certipy "certipy --version" history
+  install_shadowcoerce
+  install_gmsadumper
+  install_pylaps
+  install_finduncommonshares
+  install_ldaprelayscan
+  install_pipx_tool goldencopy "goldencopy --help" history
+  install_crackhound
+  install_kerbrute                # Tool to enumerate and bruteforce AD accounts through kerberos pre-authentication
+  install_pipx_tool ldeep "ldeep --help" history
 #   install_rusthound
-#   install_certsync
-#   install_KeePwn
-#   install_pre2k
-#   install_msprobe
-#   install_masky
-#   install_roastinthemiddle
-#   install_PassTheCert
+  install_pipx_tool certsync "certsync --help"
+  install_pipx_tool keewpn "keepwn --help"
+  install_pipx_tool pre2k "pre2k --help"
+  install_pipx_tool msprobe "msprobe --help"
+  install_pipx_tool masky "masky --help"
+  install_pipx_tool roastinthemiddle "roastinthemiddle --help"
 }
 
 function package_ad_configure() {
@@ -95,6 +94,7 @@ function package_ad_configure() {
     configure_powershell
     configure_cypheroth
     configure_darkarmour
+    configure_pcreds
 }
 
 function install_responder() {
@@ -155,18 +155,7 @@ function install_bloodhound() {
 function configure_bloodhound() {
   colorecho "Configure bloodhound"
   zsh -c "source ~/.zshrc && cd /opt/tools/BloodHound4 && nvm install 16.13.0 && nvm use 16.13.0 && npm install -g electron-packager && npm install && npm run build:linux"
-  if [[ $(uname -m) = 'x86_64' ]]
-  then
-    ln -s /opt/tools/BloodHound4/BloodHound-linux-x64/BloodHound /opt/tools/BloodHound4/BloodHound
-  elif [[ $(uname -m) = 'aarch64' ]]
-  then
-    ln -s /opt/tools/BloodHound4/BloodHound-linux-arm64/BloodHound /opt/tools/BloodHound4/BloodHound
-  elif [[ $(uname -m) = 'armv7l' ]]
-  then
-    ln -s /opt/tools/BloodHound4/BloodHound-linux-armv7l/BloodHound /opt/tools/BloodHound4/BloodHound
-  else
-    criticalecho-noexit "This installation function doesn't support architecture $(uname -m)" && return
-  fi
+  ln -s /opt/tools/BloodHound4/BloodHound-linux/BloodHound /opt/tools/BloodHound4/BloodHound
   mkdir -p ~/.config/bloodhound
   cp -v /root/sources/bloodhound/config.json ~/.config/bloodhound/config.json
   cp -v /root/sources/bloodhound/customqueries.json ~/.config/bloodhound/customqueries.json
@@ -357,8 +346,8 @@ function install_evilwinrm() {
   colorecho "Installing evil-winrm"
   git -C /opt/tools/ clone --depth=1 https://github.com/Hackplayers/evil-winrm
   cd /opt/tools/evil-winrm
-  mkdir -p ./vendor/bundle
-  bundle install --path ./vendor/bundle
+  bundle install
+  add-aliases evil-winrm
   add-history evil-winrm
   add-test-command "evil-winrm --help"
 }
@@ -525,7 +514,240 @@ function install_gpp-decrypt(){
   git -C /opt/tools/ clone --depth=1 https://github.com/t0thkr1s/gpp-decrypt
   cd /opt/tools/gpp-decrypt || false
   python3 -m venv ./venv/
-  ./venv/bin/python3 -m pip install -r pycrypto colorama
+  ./venv/bin/python3 -m pip install pycrypto colorama
   add-aliases gpp-decrypt
   add-test-command "gpp-decrypt.py -f /opt/tools/gpp-decrypt/groups.xml"
+}
+
+function install_ntlmv1-multi() {
+  colorecho "Installing ntlmv1 multi tool"
+  git -C /opt/tools clone --depth=1 https://github.com/evilmog/ntlmv1-multi
+  add-aliases ntlmv1-multi
+  add-history ntlmv1-multi
+  add-test-command "ntlmv1-multi --ntlmv1 a::a:a:a:a"
+}
+
+function install_hashonymize() {
+  colorecho "Installing hashonymizer"
+  python3 -m pipx install git+https://github.com/ShutdownRepo/hashonymize
+  add-test-command "hashonymize --help"
+
+  install_pipx_git_tool "git+https://github.com/ShutdownRepo/hashonymize" hashonymize "hashonymize --help"
+}
+
+function install_gosecretsdump() {
+  colorecho "Installing gosecretsdump"
+  go install -v github.com/C-Sto/gosecretsdump@latest
+  add-history gosecretsdump
+  add-test-command "gosecretsdump -version"
+}
+
+function install_pygpoabuse() {
+  colorecho "Installing pyGPOabuse"
+  git -C /opt/tools/ clone --depth=1 https://github.com/Hackndo/pyGPOAbuse
+  cd /opt/tools/pyGPOAbuse
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+
+  add-aliases pygpoabuse
+  add-test-command "pygpoabuse --help"
+}
+
+function install_bloodhound-quickwin() {
+  colorecho "Installing bloodhound-quickwin"
+  git -C /opt/tools/ clone --depth=1 https://github.com/kaluche/bloodhound-quickwin
+  cd /opt/tools/bloodhound-quickwin
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install py2neo pandas prettytable
+
+  add-aliases bloodhound-quickwin
+  add-history bloodhound-quickwin
+  add-test-command "bloodhound-quickwin --help"
+}
+
+function install_ldapsearch-ad() {
+  colorecho "Installing ldapsearch-ad"
+  git -C /opt/tools/ clone --depth=1 https://github.com/yaap7/ldapsearch-ad
+  cd /opt/tools/ldapsearch-ad/
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases ldapsearch-ad
+  add-history ldapsearch-ad
+  add-test-command "ldapsearch-ad --version"
+}
+
+function install_petitpotam() {
+  colorecho "Installing PetitPotam"
+  git -C /opt/tools/ clone --depth=1 https://github.com/ly4k/PetitPotam
+  mv /opt/tools/PetitPotam /opt/tools/PetitPotam_alt
+  git -C /opt/tools/ clone --depth=1 https://github.com/topotam/PetitPotam
+  add-aliases petitpotam
+  add-history petitpotam
+  add-test-command "petitpotam.py --help"
+}
+
+function install_dfscoerce() {
+  colorecho "Installing DfsCoerce"
+  git -C /opt/tools/ clone --depth=1 https://github.com/Wh04m1001/DFSCoerce.git
+  add-aliases dfscoerce
+  add-history dfscoerce
+  add-test-command "dfscoerce.py --help"
+}
+
+function install_pkinittools() {
+  colorecho "Installing PKINITtools"
+  git -C /opt/tools/ clone --depth=1 https://github.com/dirkjanm/PKINITtools
+  add-aliases pkinittools
+  add-history pkinittools
+  add-test-command "gettgtpkinit.py --help"
+}
+
+function install_pywhisker() {
+  colorecho "Installing pyWhisker"
+  git -C /opt/tools/ clone --depth=1 https://github.com/ShutdownRepo/pywhisker
+  cd /opt/tools/pywhisker
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases pywhisker
+  add-history pywhisker
+  add-test-command "pywhisker.py --help"
+}
+
+function install_targetedKerberoast() {
+  colorecho "Installing targetedKerberoast"
+  git -C /opt/tools/ clone https://github.com/ShutdownRepo/targetedKerberoast
+  cd /opt/tools/targetedKerberoast
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases targetedkerberoast
+  add-history targetedkerberoast
+  add-test-command "targetedKerberoast.py --help"
+}
+
+function install_pcredz() {
+  colorecho "Installing PCredz"
+  # git -C /opt/tools/ clone --depth=1 https://github.com/lgandx/PCredz
+  # cd /opt/tools/PCredz
+  # python3 -m venv ./venv/
+  # ./venv/bin/python3 -m pip install Cython python-libpcap
+
+  # add-aliases pcredz
+  add-test-command "PCredz --help"
+}
+
+function configure_pcreds() {
+  colorecho "Configuring pcreds"
+  # fapt libpcap-dev
+}
+
+function install_pywsus() {
+  colorecho "Installing pywsus"
+  git -C /opt/tools/ clone --depth=1 https://github.com/GoSecure/pywsus
+  cd /opt/tools/pywsus
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r ./requirements.txt
+  add-aliases pywsus
+  add-history pywsus
+  add-test-command "pywsus.py --help"
+}
+
+function install_donpapi() {
+  colorecho "Installing DonPAPI"
+  git -C /opt/tools/ clone --depth=1 https://github.com/login-securite/DonPAPI.git
+  cd /opt/tools/DonPAPI
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r ./requirements.txt
+  add-aliases donpapi
+  add-history donpapi
+  add-test-command "DonPAPI.py --help"
+}
+
+function install_shadowcoerce() {
+  colorecho "Installing ShadowCoerce PoC"
+  git -C /opt/tools/ clone --depth=1 https://github.com/ShutdownRepo/ShadowCoerce
+  add-aliases shadowcoerce
+  add-history shadowcoerce
+  add-test-command "shadowcoerce.py --help"
+}
+
+function install_gmsadumper() {
+  colorecho "Installing gMSADumper"
+  git -C /opt/tools/ clone --depth=1 https://github.com/micahvandeusen/gMSADumper
+  add-aliases gmsadumper
+  add-history gmsadumper
+  add-test-command "gMSADumper.py --help"
+}
+
+function install_pylaps() {
+  colorecho "Installing pyLAPS"
+  git -C /opt/tools/ clone --depth=1 https://github.com/p0dalirius/pyLAPS
+  add-aliases pylaps
+  add-history pylaps
+  add-test-command "pyLAPS.py --help"
+}
+
+function install_finduncommonshares() {
+  colorecho "Installing FindUncommonShares"
+  git -C /opt/tools/ clone --depth=1 https://github.com/p0dalirius/FindUncommonShares
+  cd /opt/tools/FindUncommonShares/
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases finduncommonshares
+  add-history finduncommonshares
+  add-test-command "FindUncommonShares.py --help"
+}
+
+
+function install_ldaprelayscan() {
+  colorecho "Installing LdapRelayScan"
+  git -C /opt/tools/ clone --depth=1 https://github.com/zyn3rgy/LdapRelayScan
+  cd /opt/tools/LdapRelayScan
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases ldaprelayscan
+  add-history ldaprelayscan
+  add-test-command "LdapRelayScan.py --help"
+}
+
+function install_crackhound() {
+  colorecho "Installing CrackHound"
+  git -C /opt/tools/ clone --depth=1 https://github.com/trustedsec/CrackHound
+  cd /opt/tools/CrackHound
+  prs="6"
+  for pr in $prs; do git fetch origin pull/$pr/head:pull/$pr && git merge --strategy-option theirs --no-edit pull/$pr; done
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r requirements.txt
+  add-aliases crackhound
+  add-history crackhound
+  add-test-command "crackhound.py --help"
+}
+
+
+function install_kerbrute() {
+  colorecho "Installing Kerbrute"
+  # install_go_tool kerbrute "kerbrute --help" history
+  go install github.com/ropnop/kerbrute@latest
+  add-history kerbrute
+  add-test-command "kerbrute --help"
+  # FIXME ARM platforms install ?
+}
+
+function install_rusthound() {
+  colorecho "Installing RustHound"
+  # fapt gcc libclang-dev clang libclang-dev libgssapi-krb5-2 libkrb5-dev libsasl2-modules-gssapi-mit musl-tools gcc-mingw-w64-x86-64
+  # git -C /opt/tools/ clone https://github.com/OPENCYBER-FR/RustHound
+  # cd /opt/tools/RustHound
+  # # Sourcing rustup shell setup, so that rust binaries are found when installing cme
+  # source "$HOME/.cargo/env"
+  # cargo build --release
+  # ln -s /opt/tools/RustHound/target/release/rusthound /opt/tools/bin/rusthound
+  # add-history rusthound
+  add-test-command "rusthound --help"
+}
+
+function install_PassTheCert() {
+  colorecho "Installing PassTheCert"
+  git -C /opt/tools/ clone --depth=1 https://github.com/AlmondOffSec/PassTheCert
+  add-aliases PassTheCert
+  add-test-command "passthecert.py --help"
 }

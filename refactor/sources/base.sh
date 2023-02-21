@@ -98,6 +98,10 @@ function package_base() {
 
   # FZF
   touch /usr/share/doc/fzf/examples/key-bindings.zsh
+
+  # Set Global config path to vendor
+  # All programs using bundle will store their deps in vendor/
+  bundle config path vendor/
 }
 
 function install_exegol-history() {

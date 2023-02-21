@@ -23,6 +23,10 @@ WORKDIR /tmp
 
 ADD sources /root/sources/
 
+ADD sources/merge.sh merge.sh
+
+RUN chmod +x ./merge.sh
+
 COPY --from=code_analysis /tmp/tmp-pipx tmp-pipx
 COPY --from=code_analysis /tmp/tmp-opt tmp-opt
 COPY --from=code_analysis /tmp/tmp-history tmp-history
@@ -30,6 +34,8 @@ COPY --from=code_analysis /tmp/tmp-aliases tmp-aliases
 COPY --from=code_analysis /tmp/tmp-commands tmp-commands
 COPY --from=code_analysis /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
 
 # Active Directory
 
@@ -42,11 +48,17 @@ COPY --from=ad /tmp/tmp-aliases tmp-aliases
 COPY --from=ad /tmp/tmp-commands tmp-commands
 COPY --from=ad /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
+
 # Wordlists
 
 COPY --from=wordlists /tmp/tmp-opt tmp-opt
 COPY --from=wordlists /tmp/tmp-history tmp-history
 COPY --from=wordlists /tmp/tmp-commands tmp-commands
+
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
 
 # Misc
 
@@ -59,6 +71,9 @@ COPY --from=misc /tmp/tmp-aliases tmp-aliases
 COPY --from=misc /tmp/tmp-commands tmp-commands
 COPY --from=misc /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
+
 # C2
 
 COPY --from=c2 /tmp/tmp-pipx tmp-pipx
@@ -67,6 +82,9 @@ COPY --from=c2 /tmp/tmp-history tmp-history
 COPY --from=c2 /tmp/tmp-aliases tmp-aliases
 COPY --from=c2 /tmp/tmp-commands tmp-commands
 COPY --from=c2 /tmp/tmp-pipx-symlink tmp-pipx-symlink
+
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
 
 # Cracking
 
@@ -78,16 +96,8 @@ COPY --from=cracking /tmp/tmp-aliases tmp-aliases
 COPY --from=cracking /tmp/tmp-commands tmp-commands
 COPY --from=cracking /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
-# Merge all
-
-RUN cp -RT tmp-pipx /root/.local/pipx/
-RUN cp -RT tmp-opt /opt/
-RUN cp -RT tmp-deb /opt/packages
-RUN cp -RT tmp-go /root/go/bin/
-RUN cp -RT tmp-history /root/.zsh_history
-RUN cp -RT tmp-aliases /opt/.exegol_aliases
-RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
-RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
+RUN ./merge.sh
+RUN rm -rf /tmp/tmp-*
 
 # Configure
 
