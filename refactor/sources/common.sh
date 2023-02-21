@@ -87,8 +87,21 @@ function set_go_env() {
 }
 
 function install_pipx_git_tool() {
-   colorecho "Installing $1 with pipx"
+   colorecho "Installing $2 with pipx"
    python3 -m pipx install $1
+   if [ "$3" ]
+   then
+     add-test-command $3
+   fi
+   if [[ "$*" == *"history"* ]]
+   then
+       add-history $2
+   fi
+}
+
+function install_go_tool() {
+   colorecho "Installing $2 with Golang"
+   go install -v $1
    if [ "$3" ]
    then
      add-test-command $3

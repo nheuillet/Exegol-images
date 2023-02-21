@@ -6,17 +6,17 @@ source common.sh
 # Package dedicated to offensive miscellaneous tools
 function package_misc() {
     set_go_env
-    install_goshs                   # Web uploader/downloader page
+    install_go_tool "github.com/patrickhener/goshs@latest" goshs "goshs -v" history # Web uploader/downloader page
     install_searchsploit            # Exploitdb local search engine
     install_rlwrap                  # Reverse shell utility
-    install_shellerator             # Reverse shell generator
-    install_uberfile                # file uploader/downloader commands generator
-    install_arsenal                 # Cheatsheets tool
+    install_pipx_git_tool "git+https://github.com/ShutdownRepo/shellerator" shellerator "shellerator --help" history # Reverse shell generator
+    install_pipx_git_tool "git+https://github.com/ShutdownRepo/uberfile" uberfile "uberfile --help" # file uploader/downloader commands generator
+    install_pipx_tool arsenal "arsenal --version" aliases # Cheatsheets tool
     install_trilium                 # notes taking tool
     install_exiftool                # Meta information reader/writer
     install_imagemagick             # Copy, modify, and distribute image
     install_ngrok                   # expose a local development server to the Internet
-    install_whatportis              # Search default port number
+    install_pipx_tool whatportis "whatportis --version" history # Search default port number
     install_ascii                   # The ascii table in the shell
 }
 
@@ -29,22 +29,15 @@ function package_misc_configure() {
     configure_ascii
 }
 
-function install_goshs() {
-    colorecho "Installing goshs"
-    go install -v github.com/patrickhener/goshs@latest
-    add-history goshs
-    add-test-command "goshs -v"
-}
-
 function install_searchsploit() {
-    colorecho "Installing Searchsploit"
+    colorecho "Installing searchsploit"
     git -C /opt/tools/ clone https://gitlab.com/exploit-database/exploitdb
-    ln -sf /opt/tools/exploitdb/searchsploit /opt/tools/bin/searchsploit
     add-test-command "searchsploit --help; searchsploit --help |& grep 'You can use any number of search terms'"
 }
 
 function configure_searchsploit() {
     colorecho "Configuring Searchsploit"
+    ln -sf /opt/tools/exploitdb/searchsploit /opt/tools/bin/searchsploit
     cp -n /opt/tools/exploitdb/.searchsploit_rc ~/
     sed -i 's/\(.*[pP]aper.*\)/#\1/' ~/.searchsploit_rc
     sed -i 's/opt\/exploitdb/opt\/tools\/exploitdb/' ~/.searchsploit_rc
@@ -61,26 +54,6 @@ function install_rlwrap() {
 function configure_rlwrap() {
     colorecho "Configuring rlwrap"
     dpkg -i /opt/packages/rlwrap*
-}
-
-function install_shellerator() {
-    colorecho "Installing shellerator"
-    python3 -m pipx install git+https://github.com/ShutdownRepo/shellerator
-    add-history shellerator
-    add-test-command "shellerator --help"
-}
-
-function install_uberfile() {
-    colorecho "Installing uberfile"
-    python3 -m pipx install git+https://github.com/ShutdownRepo/uberfile
-    add-test-command "uberfile --help"
-}
-
-function install_arsenal() {
-    echo "Installing Arsenal"
-    python3 -m pipx install git+https://github.com/Orange-Cyberdefense/arsenal
-    add-aliases arsenal
-    add-test-command "arsenal --version"
 }
 
 function install_trilium() {
@@ -137,22 +110,15 @@ function install_ngrok() {
     add-test-command "ngrok version"
 }
 
-function install_whatportis() {
-    colorecho "Installing whatportis"
-    python3 -m pipx install whatportis
-    add-history whatportis
-    add-test-command "whatportis --version"
-}
-
 function configure_whatportis() {
     colorecho "Configuring whatportis"
     echo y | whatportis --update
 }
 
 function install_ascii() {
-  colorecho "Installing ascii"
-  fapt-deps ascii
-  add-test-command "ascii -v"
+    colorecho "Installing ascii"
+    fapt-deps ascii
+    add-test-command "ascii -v"
 }
 
 function configure_ascii() {
