@@ -5,32 +5,23 @@ source common.sh
 
 # Package dedicated to the installation of wordlists and tools like wl generators
 function package_wordlists() {
-  install_crunch                  # Wordlist generator
   install_seclists                # Awesome wordlists
   install_cewl                    # Wordlist generator FIXME
-  install_cupp                    # User password profiler
   install_pass_station            # Default credentials database
   install_username-anarchy        # Generate possible usernames based on heuristics
   install_genusernames
 }
 
 function package_wordlists_configure() {
-  configure_crunch
+  configure_apt_tools
   configure_rockyou
   configure_seclists
-  configure_cupp
   configure_genusernames
 }
 
-function install_crunch() {
-  colorecho "Installing crunch"
-  fapt-deps crunch
-  add-test-command "crunch --help"
-}
-
-function configure_crunch() {
-  colorecho "Configuring crunch"
-  dpkg -i /opt/packages/crunch*
+function configure_apt_tools() {
+    install_apt_tool crunch "crunch --help" # Wordlist generator
+    install_apt_tool cupp "cupp --help" # User password profiler
 }
 
 function install_seclists() {
@@ -73,17 +64,6 @@ function install_cewl() {
     # fi
     # add-history cewl
     add-test-command "cewl --help"
-}
-
-function install_cupp() {
-    colorecho "Installing cupp"
-    fapt-deps cupp
-    add-test-command "cupp --help"
-}
-
-function configure_cupp() {
-    colorecho "Configuring cupp"
-    dpkg -i /opt/packages/cupp*
 }
 
 function install_pass_station() {

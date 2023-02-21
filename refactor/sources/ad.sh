@@ -14,9 +14,8 @@ function package_ad() {
   install_pipx_tool sprayhound "sprayhound --help" history # Password spraying tool
   install_pipx_git_tool "git+https://github.com/ShutdownRepo/smartbrute" "smartbrute" "smartbrute --help" history # Password spraying tool
   install_bloodhound-py           # AD cartographer
-  install_neo4j                   # Bloodhound dependency
   install_bloodhound
-  install_cyperoth                # Bloodhound dependency
+  install_cypheroth                # Bloodhound dependency
 #  # install_mitm6_sources         # Install mitm6 from sources
   install_pipx_tool mitm6 "mitm6 --help" history # DNS server misconfiguration exploiter
   install_pipx_git_tool "git+https://github.com/aas-n/aclpwn.py" "aclpwn" "aclpwn -h" # ACL exploiter
@@ -38,15 +37,10 @@ function package_ad() {
   install_windapsearch-go         # Active Directory Domain enumeration through LDAP queries
   install_oaburl                  # Send request to the MS Exchange Autodiscover service
   install_lnkup
-  install_samdump2                # Dumps Windows 2k/NT/XP/Vista password hashes
-  install_smbclient               # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
   install_polenum
   install_smbmap                  # Allows users to enumerate samba share drives across an entire domain
   install_pth-tools               # Pass the hash attack
   install_smtp-user-enum          # SMTP user enumeration via VRFY, EXPN and RCPT
-  install_onesixtyone             # SNMP scanning
-  install_nbtscan                 # NetBIOS scanning tool
-  install_rpcbind                 # RPC scanning
 #   install_gpp-decrypt             # Decrypt a given GPP encrypted string
 #   install_ntlmv1-multi            # NTLMv1 multi tools: modifies NTLMv1/NTLMv1-ESS/MSCHAPv2
 #   install_hashonymize             # Anonymize NTDS, ASREProast, Kerberoast hashes for remote cracking
@@ -88,23 +82,28 @@ function package_ad() {
 }
 
 function package_ad_configure() {
-  configure_responder
-  configure_bloodhound
-  configure_neo4j
-  configure_impacket
-  configure_krbrelayx
-  configure_samdump2
-  configure_smbclient
-  configure_pth-tools
-  configure_onesixtyone
-  configure_nbtscan
-  configure_powershell
+    configure_apt_tools
+    configure_responder
+    configure_bloodhound
+    configure_neo4j
+    configure_impacket
+    configure_krbrelayx
+    configure_pth-tools
+    configure_powershell
+    configure_cypheroth
+    configure_darkarmour
+}
+
+function configure_apt_tools() {
+    install_apt_tool samdump2 "samdump2 -h; samdump2 -h |& grep 'enable debugging'" # Dumps Windows 2k/NT/XP/Vista password hashes
+    install_apt_tool smbclient "smbclient --help" history # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
+    install_apt_tool onesixtyone "onesixtyone 127.0.0.1 public" history # SNMP scanning
+    install_apt_tool nbtscan "nbtscan 127.0.0.1" history # NetBIOS scanning tool
 }
 
 function install_responder() {
   colorecho "Installing Responder"
   git -C /opt/tools/ clone --depth=1 https://github.com/lgandx/Responder
-  fapt-deps python3-netifaces
   add-aliases responder
   add-history responder
   add-test-command "responder --version"
@@ -112,7 +111,7 @@ function install_responder() {
 
 function configure_responder() {
   colorecho "Configure responder"
-  dpkg -i /opt/packages/python3-netifaces*
+  fapt python3-netifaces
   sed -i 's/ Random/ 1122334455667788/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/AccessDenied.html/\/opt\/tools\/Responder\/files\/AccessDenied.html/g' /opt/tools/Responder/Responder.conf
   sed -i 's/files\/BindShell.exe/\/opt\/tools\/Responder\/files\/BindShell.exe/g' /opt/tools/Responder/Responder.conf
@@ -179,20 +178,12 @@ function configure_bloodhound() {
   # TODO add-test-command
 }
 
-function install_neo4j() {
-  colorecho "Installing neo4j"
+function configure_neo4j() {
+  colorecho "Configure neo4j"
   wget -O - https://debian.neo4j.com/neotechnology.gpg.key | apt-key add -
   echo 'deb https://debian.neo4j.com stable latest' | tee /etc/apt/sources.list.d/neo4j.list
   apt-get update
-  fapt-deps neo4j
-}
-
-function configure_neo4j() {
-  colorecho "Configure neo4j"
-  dpkg -i /opt/packages/cypher-shell*
-  dpkg -i /opt/packages/daemon*
-  dpkg -i /opt/packages/neo4j*
-
+  fapt neo4j
 
   # TODO: when temporary fix is not needed anymore --> neo4j-admin dbms set-initial-password exegol4thewin
   neo4j-admin dbms set-initial-password exegol4thewin
@@ -204,13 +195,16 @@ function configure_neo4j() {
   add-test-command "neo4j version"
 }
 
-function install_cyperoth() {
+function install_cypheroth() {
   colorecho "Installing cypheroth"
-  fapt-deps cypher-shell daemon
   git -C /opt/tools/ clone --depth=1 https://github.com/seajaysec/cypheroth/
   add-aliases cypheroth
   add-history cypheroth
   add-test-command "cypheroth --help; cypheroth -u neo4j -p exegol4thewin | grep 'Quitting Cypheroth'"
+}
+
+function configure_cypheroth() {
+  fapt cypher-shell daemon
 }
 
 function install_impacket() {
@@ -289,12 +283,15 @@ function install_ruler() {
 }
 
 function install_darkarmour() {
-  colorecho "Installing darkarmour"
-  git -C /opt/tools/ clone --depth=1 https://github.com/bats3c/darkarmour
-  fapt-deps upx-ucl osslsigncode
-  add-aliases darkarmour
-  add-history darkarmour
-  add-test-command "darkarmour --help"
+    colorecho "Installing darkarmour"
+    git -C /opt/tools/ clone --depth=1 https://github.com/bats3c/darkarmour
+    add-aliases darkarmour
+    add-history darkarmour
+    add-test-command "darkarmour --help"
+}
+
+function configure_darkarmour() {
+    fapt upx-ucl osslsigncode
 }
 
 function install_amber() {
@@ -454,48 +451,6 @@ function install_lnkup() {
   add-test-command "lnk-generate.py --help"
 }
 
-function install_samdump2() {
-  colorecho "Installing samdump2"
-  fapt-deps samdump2
-  add-test-command "samdump2 -h; samdump2 -h |& grep 'enable debugging'"
-}
-
-function configure_samdump2() {
-  colorecho "Configure samdump2"
-  dpkg -i /opt/packages/samdump2*
-}
-
-function install_smbclient() {
-  colorecho "Installing smbclient"
-  # fapt-deps smbclient
-  add-history smbclient
-  add-test-command "smbclient --help"
-}
-
-function configure_smbclient() {
-  colorecho "Configure smbclient"
-  fapt smbclient
-  # TODO : A lot of deps -_-
-
-  # sensible-utils
-  # ucf
-  # dpkg -i /opt/packages/samba-common*
-  # dpkg -i /opt/packages/samba-libs*
-  # dpkg -i /opt/packages/libarchive13*
-  # libmd0
-  # dpkg -i /opt/packages/libbsd0*
-  # dpkg -i /opt/packages/libpopt0*
-  # dpkg -i /opt/packages/libreadline8*
-  # dpkg -i /opt/packages/libsmbclient*
-  # dpkg -i /opt/packages/libtalloc2*
-  # dpkg -i /opt/packages/libtevent0*
-  # libicu67
-
-  # dpkg -i /opt/packages/libwbclient0*
-  
-  # dpkg -i /opt/packages/smbclient*
-}
-
 function install_polenum() {
   colorecho "Installing polenum"
   git -C /opt/tools/ clone --depth=1 https://github.com/Wh1t3Fox/polenum
@@ -568,39 +523,3 @@ function install_smtp-user-enum(){
   add-history smtp-user-enum
   add-test-command "smtp-user-enum --help"
 }
-
-function install_onesixtyone() {
-  colorecho "Installing onesixtyone"
-  fapt-deps onesixtyone
-  add-history onesixtyone
-  add-test-command "onesixtyone 127.0.0.1 public"
-}
-
-function configure_onesixtyone() {
-  colorecho "Configure onesixtyone"
-  dpkg -i /opt/packages/onesixtyone*
-}
-
-function install_nbtscan() {
-  colorecho "Installing nbtscan"
-  fapt-deps nbtscan
-  add-history nbtscan
-  add-test-command "nbtscan 127.0.0.1"
-}
-
-function configure_nbtscan() {
-  colorecho "Configure nbtscan"
-  dpkg -i /opt/packages/nbtscan*
-}
-
-function install_rpcbind() {
-  colorecho "Installing rpcbind"
-  # Pretty sure rpcbind is already installed, se we're skipping
-  # fapt --download-only rpcbind
-  add-test-command "rpcbind"
-}
-
-# function configure_rpcbind() {
-#   dpkg -i /opt/packages/rpcbind*
-
-# }

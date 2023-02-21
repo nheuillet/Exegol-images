@@ -44,13 +44,6 @@ function fapt() {
   /usr/local/sbin/apt-fast install -y --no-install-recommends "$@"
 }
 
-function fapt-deps() {
-  colorecho "Downloading apt dependencies: $*"
-  cd /opt/packages
-  /usr/local/sbin/apt-fast download "$@"
-  cd - 
-}
-
 function fapt-noexit() {
   # This function tries the same thing as fapt but doesn't exit in case something's wrong.
   # Example: a package exists in amd64 but not arm64. I didn't find a way of knowing that beforehand.
@@ -124,3 +117,22 @@ function install_pipx_tool() {
       add-history $1
    fi
  }
+
+
+function install_apt_tool() {
+   colorecho "Installing $1 with apt"
+   fapt $1
+   if [ "$2" ]
+   then
+     add-test-command $2
+   fi
+   if [[ "$*" == *"history"* ]]
+   then
+       add-history $1
+   fi
+
+   if [[ "$*" == *"aliases"* ]]
+   then
+       add-aliases $1
+   fi
+}
