@@ -73,11 +73,11 @@ function package_ad() {
   install_pipx_tool ldeep "ldeep --help" history
 #   install_rusthound
   install_pipx_tool certsync "certsync --help"
-  install_pipx_tool keewpn "keepwn --help"
-  install_pipx_tool pre2k "pre2k --help"
+  install_pipx_git_tool "git+https://github.com/Orange-Cyberdefense/KeePwn" keewpn "keepwn --help"
+  install_pipx_git_tool "git+https://github.com/garrettfoster13/pre2k" pre2k "pre2k --help"
   install_pipx_tool msprobe "msprobe --help"
   install_pipx_tool masky "masky --help"
-  install_pipx_tool roastinthemiddle "roastinthemiddle --help"
+  install_pipx_git_tool "git+https://github.com/Tw1sm/RITM" roastinthemiddle "roastinthemiddle --help"
 }
 
 function package_ad_configure() {
