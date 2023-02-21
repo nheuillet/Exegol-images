@@ -28,7 +28,7 @@ function package_misc_configure() {
 
 function install_searchsploit() {
     colorecho "Installing searchsploit"
-    git -C /opt/tools/ clone https://gitlab.com/exploit-database/exploitdb
+    git -C /opt/tools/ clone --depth 1 https://gitlab.com/exploit-database/exploitdb
     add-test-command "searchsploit --help; searchsploit --help |& grep 'You can use any number of search terms'"
 }
 
@@ -38,7 +38,6 @@ function configure_searchsploit() {
     cp -n /opt/tools/exploitdb/.searchsploit_rc ~/
     sed -i 's/\(.*[pP]aper.*\)/#\1/' ~/.searchsploit_rc
     sed -i 's/opt\/exploitdb/opt\/tools\/exploitdb/' ~/.searchsploit_rc
-    searchsploit -u
 }
 
 function install_trilium() {
