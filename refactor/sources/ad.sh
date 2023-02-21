@@ -467,13 +467,14 @@ function configure_samdump2() {
 
 function install_smbclient() {
   colorecho "Installing smbclient"
-  fapt-deps smbclient
+  # fapt-deps smbclient
   add-history smbclient
   add-test-command "smbclient --help"
 }
 
 function configure_smbclient() {
   colorecho "Configure smbclient"
+  fapt smbclient
   # TODO : A lot of deps -_-
 
   # sensible-utils
