@@ -17,7 +17,7 @@ FROM alpine:3.17.2
 
 WORKDIR /tmp
 
-COPY --from=build /opt/tools tmp-tools
+COPY --from=build /opt/ tmp-opt
 COPY --from=build /opt/packages tmp-deb
 COPY --from=build /root/.zsh_history tmp-history
 COPY --from=build /opt/.exegol_aliases tmp-aliases

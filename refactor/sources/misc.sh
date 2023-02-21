@@ -23,7 +23,6 @@ function package_misc_configure() {
     install_apt_tool ascii "ascii -v" # The ascii table in the shell
     configure_searchsploit
     configure_trilium
-    configure_whatportis
 }
 
 function install_searchsploit() {
@@ -50,12 +49,14 @@ function install_trilium() {
 
 function configure_trilium() {
     colorecho "Configuring trilium"
-    fapt libpng-dev nasm libx11-doc libxcb-doc libx11-dev libxkbfile-dev
+    # FIXME : Node errors
 
-    # the npm install needs to be executed in the zsh context where nvm is used to set the Node version to be used.
-    zsh -c "source ~/.zshrc && cd /opt/tools/trilium && nvm install 16 && nvm use 16 && npm install && npm rebuild"
-    mkdir -p /root/.local/share/trilium-data
-    cp -v /root/sources/trilium/* /root/.local/share/trilium-data
+    # fapt libpng-dev nasm libx11-doc libxcb-doc libx11-dev libxkbfile-dev
+
+    # # the npm install needs to be executed in the zsh context where nvm is used to set the Node version to be used.
+    # zsh -c "source ~/.zshrc && cd /opt/tools/trilium && nvm install 16 && nvm use 16 && npm install && npm rebuild"
+    # mkdir -p /root/.local/share/trilium-data
+    # cp -v /root/sources/trilium/* /root/.local/share/trilium-data
 }
 
 function install_ngrok() {
@@ -75,9 +76,4 @@ function install_ngrok() {
     unzip -d /opt/tools/bin/ /tmp/ngrok.zip
     add-history ngrok
     add-test-command "ngrok version"
-}
-
-function configure_whatportis() {
-    colorecho "Configuring whatportis"
-    echo y | whatportis --update
 }

@@ -519,3 +519,13 @@ function install_smtp-user-enum(){
   add-history smtp-user-enum
   add-test-command "smtp-user-enum --help"
 }
+
+function install_gpp-decrypt(){
+  colorecho "Installing gpp-decrypt"
+  git -C /opt/tools/ clone --depth=1 https://github.com/t0thkr1s/gpp-decrypt
+  cd /opt/tools/gpp-decrypt || false
+  python3 -m venv ./venv/
+  ./venv/bin/python3 -m pip install -r pycrypto colorama
+  add-aliases gpp-decrypt
+  add-test-command "gpp-decrypt.py -f /opt/tools/gpp-decrypt/groups.xml"
+}

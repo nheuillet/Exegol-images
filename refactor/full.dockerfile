@@ -24,7 +24,7 @@ WORKDIR /tmp
 ADD sources /root/sources/
 
 COPY --from=code_analysis /tmp/tmp-pipx tmp-pipx
-COPY --from=code_analysis /tmp/tmp-tools tmp-tools
+COPY --from=code_analysis /tmp/tmp-opt tmp-opt
 COPY --from=code_analysis /tmp/tmp-history tmp-history
 COPY --from=code_analysis /tmp/tmp-aliases tmp-aliases
 COPY --from=code_analysis /tmp/tmp-commands tmp-commands
@@ -34,7 +34,7 @@ COPY --from=code_analysis /tmp/tmp-pipx-symlink tmp-pipx-symlink
 # Active Directory
 
 COPY --from=ad /tmp/tmp-pipx tmp-pipx
-COPY --from=ad /tmp/tmp-tools tmp-tools
+COPY --from=ad /tmp/tmp-opt tmp-opt
 COPY --from=ad /tmp/tmp-deb tmp-deb
 COPY --from=ad /tmp/tmp-go tmp-go
 COPY --from=ad /tmp/tmp-history tmp-history
@@ -44,14 +44,14 @@ COPY --from=ad /tmp/tmp-pipx-symlink tmp-pipx-symlink
 
 # Wordlists
 
-COPY --from=wordlists /tmp/tmp-tools tmp-tools
+COPY --from=wordlists /tmp/tmp-opt tmp-opt
 COPY --from=wordlists /tmp/tmp-history tmp-history
 COPY --from=wordlists /tmp/tmp-commands tmp-commands
 
 # Misc
 
 COPY --from=misc /tmp/tmp-pipx tmp-pipx
-COPY --from=misc /tmp/tmp-tools tmp-tools
+COPY --from=misc /tmp/tmp-opt tmp-opt
 COPY --from=misc /tmp/tmp-deb tmp-deb
 COPY --from=misc /tmp/tmp-go tmp-go
 COPY --from=misc /tmp/tmp-history tmp-history
@@ -62,7 +62,7 @@ COPY --from=misc /tmp/tmp-pipx-symlink tmp-pipx-symlink
 # C2
 
 COPY --from=c2 /tmp/tmp-pipx tmp-pipx
-COPY --from=c2 /tmp/tmp-tools tmp-tools
+COPY --from=c2 /tmp/tmp-opt tmp-opt
 COPY --from=c2 /tmp/tmp-history tmp-history
 COPY --from=c2 /tmp/tmp-aliases tmp-aliases
 COPY --from=c2 /tmp/tmp-commands tmp-commands
@@ -71,7 +71,7 @@ COPY --from=c2 /tmp/tmp-pipx-symlink tmp-pipx-symlink
 # Cracking
 
 COPY --from=cracking /tmp/tmp-pipx tmp-pipx
-COPY --from=cracking /tmp/tmp-tools tmp-tools
+COPY --from=cracking /tmp/tmp-opt tmp-opt
 COPY --from=cracking /tmp/tmp-deb tmp-deb
 COPY --from=cracking /tmp/tmp-history tmp-history
 COPY --from=cracking /tmp/tmp-aliases tmp-aliases
@@ -81,7 +81,7 @@ COPY --from=cracking /tmp/tmp-pipx-symlink tmp-pipx-symlink
 # Merge all
 
 RUN cp -RT tmp-pipx /root/.local/pipx/
-RUN cp -RT tmp-tools /opt/tools
+RUN cp -RT tmp-opt /opt/
 RUN cp -RT tmp-deb /opt/packages
 RUN cp -RT tmp-go /root/go/bin/
 RUN cp -RT tmp-history /root/.zsh_history
@@ -89,15 +89,17 @@ RUN cp -RT tmp-aliases /opt/.exegol_aliases
 RUN cp -RT tmp-commands /.exegol/build_pipeline_tests/all_commands.txt
 RUN cp -RT tmp-pipx-symlink /tmp/pipx-symlink
 
-# Create pipx symbolic links
+# Configure
 
 WORKDIR /root/sources/
+
 RUN chmod +x start.sh
 RUN ./start.sh package_ad_configure
 RUN ./start.sh package_c2_configure
 RUN ./start.sh package_cracking_configure
 RUN ./start.sh package_misc_configure
 RUN ./start.sh package_wordlists_configure
+
 
 # Pipx env setup
 

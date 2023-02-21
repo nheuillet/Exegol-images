@@ -15,8 +15,8 @@ function package_wordlists() {
 function package_wordlists_configure() {
     install_apt_tool crunch "crunch --help" # Wordlist generator
     install_apt_tool cupp "cupp --help" # User password profiler
-    configure_rockyou
     configure_seclists
+    configure_rockyou
     configure_genusernames
 }
 
@@ -30,14 +30,16 @@ function install_seclists() {
 
 function configure_seclists() {
   colorecho "Configuring seclists"
+  mkdir -p /usr/share/wordlists
   ln -v -s /opt/seclists /usr/share/seclists
+  ln -v -s /opt/seclists /usr/share/wordlists/seclists
 }
 
 function configure_rockyou() {
   colorecho "Configuring rockyou"
-  mkdir /usr/share/wordlists
-  tar -xvf /usr/share/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /usr/share/wordlists/
-  ln -s /usr/share/seclists/ /usr/share/wordlists/seclists
+  ls -la /opt/
+  tar -xvf /opt/seclists/Passwords/Leaked-Databases/rockyou.txt.tar.gz -C /opt/
+  ln -v -s /opt/rockyou.txt /usr/share/wordlists/rockyou.txt
   add-test-command "[ -f '/usr/share/wordlists/rockyou.txt' ]"
 }
 
