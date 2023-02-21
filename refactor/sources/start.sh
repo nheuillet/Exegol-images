@@ -7,6 +7,7 @@ source code_analysis.sh
 source ad.sh
 source wordlists.sh
 source misc.sh
+source cracking.sh
 
 # Entry point for the installation
 if [[ $EUID -ne 0 ]]; then

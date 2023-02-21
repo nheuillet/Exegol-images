@@ -80,12 +80,12 @@ jobs:
       DOCKERFILE: misc.dockerfile
       ARCH: ${{ inputs.ARCH }}
 
-  # build-ca5:
-  #   name: Build Code Analysis Image 5
-  #   uses: ./.github/workflows/sub_build.yml
-  #   with:
-  #     DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
-  #     IMAGE_BASE_NAME: nightly-code-analysis
-  #     IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
-  #     DOCKERFILE: ./refactor/code_analysis.dockerfile
-  #     ARCH: ${{ inputs.ARCH }}
+  build-cracking:
+    name: Build Cracking Image
+    uses: ./.github/workflows/sub_build.yml
+    with:
+      DOCKER_BUILD_REPO: ${{ inputs.DOCKER_BUILD_REPO }}
+      IMAGE_BASE_NAME: cracking
+      IMAGE_VERSION: ${{ inputs.IMAGE_VERSION }}
+      DOCKERFILE: cracking.dockerfile
+      ARCH: ${{ inputs.ARCH }}
