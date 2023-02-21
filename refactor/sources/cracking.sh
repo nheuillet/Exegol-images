@@ -10,15 +10,11 @@ function package_cracking() {
 }
 
 function package_cracking_configure() {
-    configure_apt_tools
-    configure_john
-}
-
-function configure_apt_tools() {
     install_apt_tool hashcat "hashcat --help" history # Password cracker
     install_apt_tool fcrackzip "fcrackzip --help" history # Zip cracker
     install_apt_tool pdfcrack "pdfcrack --version" # PDF cracker
     install_apt_tool bruteforce-luks "bruteforce-luks -h |& grep 'Print progress info'" # Find the password of a LUKS encrypted volume
+    configure_john
 }
 
 function install_john() {

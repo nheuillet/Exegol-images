@@ -82,7 +82,10 @@ function package_ad() {
 }
 
 function package_ad_configure() {
-    configure_apt_tools
+    install_apt_tool samdump2 "samdump2 -h; samdump2 -h |& grep 'enable debugging'" # Dumps Windows 2k/NT/XP/Vista password hashes
+    install_apt_tool smbclient "smbclient --help" history # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
+    install_apt_tool onesixtyone "onesixtyone 127.0.0.1 public" history # SNMP scanning
+    install_apt_tool nbtscan "nbtscan 127.0.0.1" history # NetBIOS scanning tool  
     configure_responder
     configure_bloodhound
     configure_neo4j
@@ -92,13 +95,6 @@ function package_ad_configure() {
     configure_powershell
     configure_cypheroth
     configure_darkarmour
-}
-
-function configure_apt_tools() {
-    install_apt_tool samdump2 "samdump2 -h; samdump2 -h |& grep 'enable debugging'" # Dumps Windows 2k/NT/XP/Vista password hashes
-    install_apt_tool smbclient "smbclient --help" history # Small dynamic library that allows iOS apps to access SMB/CIFS file servers
-    install_apt_tool onesixtyone "onesixtyone 127.0.0.1 public" history # SNMP scanning
-    install_apt_tool nbtscan "nbtscan 127.0.0.1" history # NetBIOS scanning tool
 }
 
 function install_responder() {

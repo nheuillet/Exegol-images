@@ -13,15 +13,11 @@ function package_wordlists() {
 }
 
 function package_wordlists_configure() {
-  configure_apt_tools
-  configure_rockyou
-  configure_seclists
-  configure_genusernames
-}
-
-function configure_apt_tools() {
     install_apt_tool crunch "crunch --help" # Wordlist generator
     install_apt_tool cupp "cupp --help" # User password profiler
+    configure_rockyou
+    configure_seclists
+    configure_genusernames
 }
 
 function install_seclists() {

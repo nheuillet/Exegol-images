@@ -17,17 +17,13 @@ function package_misc() {
 }
 
 function package_misc_configure() {
-    configure_apt_tools
-    configure_searchsploit
-    configure_trilium
-    configure_whatportis
-}
-
-function configure_apt_tools() {
     install_apt_tool rlwrap "rlwrap --version" history # Reverse shell utility
     install_apt_tool exiftool "exiftool /usr/share/pixmaps/debian-logo.png" # Meta information reader/writer
     install_apt_tool imagemagick "convert -version" # Copy, modify, and distribute image
     install_apt_tool ascii "ascii -v" # The ascii table in the shell
+    configure_searchsploit
+    configure_trilium
+    configure_whatportis
 }
 
 function install_searchsploit() {
