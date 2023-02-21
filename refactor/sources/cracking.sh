@@ -22,6 +22,14 @@ function package_cracking_configure() {
 
 function install_hashcat() {
     colorecho "Installing hashcat"
+    add-test-command "wget -O /tmp/duck.png https://play-lh.googleusercontent.com/A6y8kFPu6iiFg7RSkGxyNspjOBmeaD3oAOip5dqQvXASnZp-Vg65jigJJLHr5mOEOryx && exiftool /tmp/duck.png && rm /tmp/duck.png"
+    
+    # Not works
+    # mkdir /opt/tools/hashcat
+    # wget -O /opt/tools/hashcat/hashcat.7z https://hashcat.net/files/hashcat-6.2.5.7z
+    # cd /opt/tools/hashcat
+    # 7z x hashcat.7z
+
     # FIXME : 29 deps
     # fapt hashcat
     # add-history hashcat

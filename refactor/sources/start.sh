@@ -8,6 +8,7 @@ source ad.sh
 source wordlists.sh
 source misc.sh
 source cracking.sh
+source c2.sh
 
 # Entry point for the installation
 if [[ $EUID -ne 0 ]]; then
