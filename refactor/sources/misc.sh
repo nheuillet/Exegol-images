@@ -11,7 +11,7 @@ function package_misc() {
     install_rlwrap                  # Reverse shell utility
     install_pipx_git_tool "git+https://github.com/ShutdownRepo/shellerator" shellerator "shellerator --help" history # Reverse shell generator
     install_pipx_git_tool "git+https://github.com/ShutdownRepo/uberfile" uberfile "uberfile --help" # file uploader/downloader commands generator
-    install_pipx_git_tool "https://github.com/Orange-Cyberdefense/arsenal" arsenal "arsenal --version" # Cheatsheets tool
+    install_pipx_git_tool "git+https://github.com/Orange-Cyberdefense/arsenal" arsenal "arsenal --version" # Cheatsheets tool
     install_trilium                 # notes taking tool
     install_exiftool                # Meta information reader/writer
     install_imagemagick             # Copy, modify, and distribute image
